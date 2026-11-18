@@ -15,6 +15,9 @@ publisher:
   name: HL7 Switzerland
   url: https://www.hl7.ch/
 
+dependencies:
+  hl7.fhir.uv.aitransparency: current
+
 pages:
   index.md:
     title: Home
@@ -44,3 +47,4 @@ menu:
 parameters:
   show-inherited-invariants: false
   usage-stats-opt-out: true
+  pin-canonicals: pin-multiples
