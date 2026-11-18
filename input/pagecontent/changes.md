@@ -5,7 +5,12 @@
 - Guidance for setting up an IG repository for agents and for the working loop.
 - Profiles AI Agent Device and Agent Authoring Provenance, extension Agent Tool Used, and two code systems with value sets.
 - Added the issue-to-pull-request set-up: issue forms, agent workflow, `issue-to-pr` skill and the contributing page.
-- Comments and reviews on an agent pull request start a follow-up run.
+- Comments and reviews on a pull request start a follow-up run.
+- The agent workflows announce a run and its ci-build address at the start and notify the people involved at the end.
 - Every new issue starts the agent until 25 November 2026; afterwards a maintainer approves an issue with the label `agent`.
 - Added the development page with model, token usage and prompts.
-- Added the rules of [HL7 AI Transparency on FHIR](https://build.fhir.org/ig/HL7/aitransparency-ig/) to the provenance model: `AIAST` label on all artifacts and examples, `reason` `AIAST` required in Agent Authoring Provenance, an input prompt entity, and no Organization as verifier. The guide now depends on `hl7.fhir.uv.aitransparency#1.0.0-ballot`, and AI Agent Device derives from AI Device, with `Device.type` holding `Artificial-Intelligence` next to the AI Agent Type code. Agent Authoring Provenance does not derive from AI Provenance yet, because the ballot version does not allow a human agent next to the AI agent ([#1](https://github.com/hl7ch/agentic-ig/issues/1)).
+- The agent now learns who is a maintainer from the write access to the repository, not from GitHub's role label on a comment.
+- Follow-up runs merge the main branch into the pull request branch, and the agent resolves conflicts, so that pull requests stay mergeable.
+- Rule added: every issue a pull request covers gets its own change log line with a link to the issue.
+- Updated the home, guidance, catalogue and development pages to describe the issue and pull request workflows; added Claude Code GitHub Actions to the catalogue.
+- The profiles now conform to [HL7 AI Transparency on FHIR](https://build.fhir.org/ig/HL7/aitransparency-ig/): the guide depends on the current HL7 build (`hl7.fhir.uv.aitransparency#current`), AI Agent Device derives from AI Device and states the kind of agent in the extension AI Kind, and Agent Authoring Provenance derives from AI Provenance and so takes over its reason `AIAST`, the AI agent role, the input prompt entity and its must-support flags. The verifier stays required and is a Practitioner or PractitionerRole, never an Organization. All artifacts and examples carry the `AIAST` label, and the provenance page compares the two models ([#1](https://github.com/hl7ch/agentic-ig/issues/1)).

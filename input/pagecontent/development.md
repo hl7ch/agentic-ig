@@ -82,3 +82,19 @@ Result: this page.
 - One prompt produced the guide. The following prompts dealt with naming and publishing, which are decisions the agent could not take alone.
 - The agent needed three full IG Publisher runs for the first version. The first failed on a mistake in the agent's own build script, the second reported one error and 90 warnings, and the third reported no errors.
 - The agent stopped twice to ask before acting: once on the choice of canonical and repository, and once before creating a public repository.
+
+### First agent runs after the first version
+
+The figures above cover the first version only. The later work, such as the issue and pull request workflows on the [contributing](contributing.html) page, was done in the same way and is not counted here.
+
+The first issue that the workflow handled gives a comparison of two models on the same task. The issue asked how the concepts of HL7 AI Transparency on FHIR could be taken over. It was implemented once by the workflow with Claude Sonnet 5.5 and once in a local rerun with Claude Opus 5.5, from the same commit, with the same prompt, skill and tools.
+
+| | Sonnet 5.5 | Opus 5.5 |
+|---|---|---|
+| Pages of the HL7 guide read | 2 | 9 |
+| Other checks | none | package registry, code lookups on a terminology server |
+| Lines added to the page | 17 | 39 |
+| Total tokens | 557,926 | 1,381,910 |
+{: .grid}
+
+Both runs changed only a narrative page and left the modelling decisions to the editor. The Opus run found that labelling is the required part of the HL7 guide, compared the HL7 provenance profile and named a conflict with this guide; the Sonnet run did not read those pages. This is one run per model, so part of the difference may be chance. The workflow now uses Opus 5.5.

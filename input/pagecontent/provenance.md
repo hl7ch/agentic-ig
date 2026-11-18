@@ -13,12 +13,14 @@ This guide defines a small model for stating which AI agent authored IG content 
 
 ### Rules the profile enforces
 
-- The author is an [AI Agent Device](StructureDefinition-ai-agent-device.html), with at least one author present.
-- At least one verifier is present, and the verifier is a human: a Practitioner or PractitionerRole. An Organization is not allowed as verifier, as in the human agent of HL7 AI Provenance. A Provenance without a verifier does not conform, which makes unreviewed agent content visible.
+Agent Authoring Provenance derives from AI Provenance of HL7 AI Transparency on FHIR, so every rule and must-support flag of that profile applies. This guide adds rules for IG authoring:
+
+- The AI agent (slice `AIagent`) has the type `author` and the role `Artificial-Intelligence`, and is an [AI Agent Device](StructureDefinition-ai-agent-device.html). At least one is present.
+- At least one human agent (slice `Humanagent`) is present. It has the type `verifier` and is a Practitioner or PractitionerRole. The invariant `agent-verifier-human` adds that every agent with the type `verifier` is a Practitioner or PractitionerRole, so an Organization cannot be the verifier. A Provenance without a verifier does not conform, which makes unreviewed agent content visible.
 - The activity is stated, so that creating content can be told apart from updating it.
-- The `reason` contains `AIAST` ("Artificial Intelligence asserted", code system `http://terminology.hl7.org/CodeSystem/v3-ObservationValue`), so that the search `Provenance?reason=AIAST` finds the records of this guide as it finds those of HL7 AI Transparency on FHIR.
-- The prompt the agent worked from can be referenced as an entity with role `derivation` that points to a DocumentReference.
-- The agent's `onBehalfOf` element is must-support and names the person or organisation that instructed the agent.
+- The `reason` contains `AIAST` ("Artificial Intelligence asserted", code system `http://terminology.hl7.org/CodeSystem/v3-ObservationValue`), as AI Provenance requires, so that the search `Provenance?reason=AIAST` finds the records of this guide as it finds those of HL7 AI Transparency on FHIR.
+- The prompt the agent worked from can be referenced as an entity (slice `inputPrompt`) with role `derivation` that points to an AI Input Prompt DocumentReference.
+- The AI agent's `onBehalfOf` element is must-support and names the person or organisation that instructed the agent.
 
 ### Labelling
 
@@ -45,7 +47,7 @@ The base FHIR Provenance resource already allows a Device as an agent, and this 
 
 #### HL7 AI Transparency on FHIR
 
-HL7 International is developing [AI Transparency on FHIR](https://build.fhir.org/ig/HL7/aitransparency-ig/branches/main/en/index.html) (package `hl7.fhir.uv.aitransparency`). It records when AI created or changed FHIR health data. This guide records when AI created or changed the artifacts of a specification. Both guides answer the same questions: which AI system was involved, what it worked from, and which human was involved. This guide follows the HL7 guide in labelling, the Provenance reason, the human verifier and the input prompt. It depends on the HL7 package `hl7.fhir.uv.aitransparency#1.0.0-ballot`. [AI Agent Device](StructureDefinition-ai-agent-device.html) derives from AI Device, so a validator checks every agent against the HL7 rules. [Agent Authoring Provenance](StructureDefinition-agent-authoring-provenance.html) does not derive from AI Provenance yet; see step 3 below. The table compares the two models as described in the current HL7 build.
+HL7 International is developing [AI Transparency on FHIR](https://build.fhir.org/ig/HL7/aitransparency-ig/branches/main/en/index.html) (package `hl7.fhir.uv.aitransparency`). It records when AI created or changed FHIR health data. This guide records when AI created or changed the artifacts of a specification. Both guides answer the same questions: which AI system was involved, what it worked from, and which human was involved. This guide follows the HL7 guide and depends on its current build, `hl7.fhir.uv.aitransparency#current`. This guide is an experiment and aligns with AI Transparency on FHIR continuously, so it uses the build rather than the published ballot version. [AI Agent Device](StructureDefinition-ai-agent-device.html) derives from AI Device, and [Agent Authoring Provenance](StructureDefinition-agent-authoring-provenance.html) derives from AI Provenance, so a validator checks every agent and every record against the HL7 rules. A change in the HL7 build can change these rules or break the build of this guide. The table compares the two models as described in the current HL7 build.
 
 The HL7 guide defines two levels:
 
@@ -54,15 +56,15 @@ The HL7 guide defines two levels:
 
 | Concept | AI Transparency on FHIR | This guide |
 |---|---|---|
-| Marking content as AI-influenced | `AIAST` in `meta.security` of every affected resource; required | `AIAST` in `meta.security` of every artifact and example of this guide; the profiles do not require it |
-| Provenance profile | AI Provenance; `reason` must contain `AIAST`; `target` 1..* | [Agent Authoring Provenance](StructureDefinition-agent-authoring-provenance.html); `reason` must contain `AIAST`; `activity` 1..1 |
-| AI system | AI Device; `type` fixed to `Artificial-Intelligence`; the kind of AI goes in the extension AI Kind (preferred binding) | [AI Agent Device](StructureDefinition-ai-agent-device.html), derived from AI Device; `type` holds `Artificial-Intelligence` and a second coding bound (required) to [AI Agent Type](ValueSet-ai-agent-type.html): coding agent, chat assistant or CI agent |
+| Marking content as AI-influenced | `AIAST` in `meta.security` of every affected resource; required; AI Provenance warns when a target lacks it (invariant `ai-target-aiast`) | `AIAST` in `meta.security` of every artifact and example of this guide; the warning of AI Provenance applies |
+| Provenance profile | AI Provenance; `reason` must contain `AIAST`; `target` 1..* | [Agent Authoring Provenance](StructureDefinition-agent-authoring-provenance.html), derived from AI Provenance; adds `activity` 1..1 |
+| AI system | AI Device; `type` fixed to `Artificial-Intelligence`; the kind of AI goes in the extension AI Kind (0..*, preferred binding) | [AI Agent Device](StructureDefinition-ai-agent-device.html), derived from AI Device; the extension AI Kind is 1..1 and bound (required) to [AI Agent Type](ValueSet-ai-agent-type.html): coding agent, chat assistant or CI agent |
 | Kind of AI | Classification by technical model, behaviour, clinical scenario and data type, for example `Large-Language-Models` | Classification by how the agent works in the IG repository |
-| AI participant in Provenance | Agent slice with `role` `Artificial-Intelligence` and `who` an AI Device | Agent slice `author` with `type` `author` and `who` an AI Agent Device |
-| Human in the loop | Agent slice, 0..*; Practitioner, PractitionerRole, RelatedPerson or Patient | Agent slice `verifier`, 1..*; Practitioner or PractitionerRole; no Organization |
-| Who instructed the agent | Not modelled separately | `agent.onBehalfOf` of the author |
-| Model description | Model card as a DocumentReference, in Hugging Face or CHAI format, as an entity or a Device extension | Not modelled; `Device.version` names the model |
-| Input prompt | Input prompt as a DocumentReference with role `derivation` | Entity slice `inputPrompt` with role `derivation` and `what` a DocumentReference; the prompts are on the [development](development.html) page |
+| AI participant in Provenance | Agent slice `AIagent` with `role` `Artificial-Intelligence` and `who` an AI Device | The same slice; `type` is `author` and `who` an AI Agent Device |
+| Human in the loop | Agent slice `Humanagent`, 0..*; Practitioner, PractitionerRole, RelatedPerson or Patient | The same slice, 1..*; `type` is `verifier`; Practitioner or PractitionerRole; no Organization |
+| Who instructed the agent | Not modelled separately | `agent.onBehalfOf` of the AI agent |
+| Model description | Model card as a DocumentReference, in Hugging Face or CHAI format, as an entity or a Device extension | Taken over, not used in the examples; `Device.version` names the model |
+| Input prompt | Entity slice `inputPrompt` with role `derivation` and an AI Input Prompt DocumentReference | Taken over; the prompts are on the [development](development.html) page |
 | Tools the AI used | Not modelled | Extension [Agent Tool Used](StructureDefinition-agent-tool-used.html) |
 | Element-level detail | Inline labels, and the `targetElement` or `targetPath` extensions on `Provenance.target` | Not needed; a target is a whole artifact |
 {: .grid}
@@ -73,10 +75,10 @@ These steps adopt the HL7 concepts:
 
 1. **Label agent-authored artifacts.** Done. Every artifact and example carries `AIAST` in `meta.security`.
 2. **Add the reason.** Done. `Provenance.reason` must contain `AIAST`.
-3. **Build on the HL7 profiles.** Partly done. This guide depends on `hl7.fhir.uv.aitransparency#1.0.0-ballot`, the only version in the package registry. AI Agent Device derives from AI Device. `Device.type` holds the HL7 code `Artificial-Intelligence`, which AI Device requires, and the AI Agent Type code as a second coding. Agent Authoring Provenance cannot derive from AI Provenance in this version. Its agents are sliced by profile on `who`, not on `who.resolve()`, so the validator matches every agent, a human verifier too, to the slice for the AI system and then rejects the human. The same happens to the input prompt entity and the model card slice. The current HL7 build has a separate slice for the human agent and the input prompt; the derivation can follow once a version with these changes is published.
+3. **Build on the HL7 profiles.** Done. This guide depends on the current HL7 build, `hl7.fhir.uv.aitransparency#current`. AI Agent Device derives from AI Device: `Device.type` holds the HL7 code `Artificial-Intelligence`, and the extension AI Kind holds the AI Agent Type code. Agent Authoring Provenance derives from AI Provenance. The published ballot version `1.0.0-ballot` could not be used, because it has no slice for a human agent and would reject the verifier.
 4. **Record the prompt.** Done. The Provenance can reference the prompt as an entity with role `derivation`, and the example does so.
 5. **Keep what is specific to IG authoring.** Done. The required verifier, `onBehalfOf` and the Agent Tool Used extension stay. The HL7 guide does not cover them.
 
 The verifier no longer allows an Organization, so it does not conflict with the human agent of the current AI Provenance.
 
-Two sources are not stable yet. The only package in the registry is `1.0.0-ballot`, and it differs from the current HL7 build. The HL7 code systems `AIdeviceTypeCS` and `AIinputsCS` use `terminology.hl7.org` URLs, but the terminology server at tx.fhir.org could not look up their codes on 18 November 2026. The code `AIAST` was found there.
+Two sources are not stable yet. The current HL7 build changes without notice, and the only package in the registry is `1.0.0-ballot`, which differs from it. The HL7 code systems `AIdeviceTypeCS` and `AIinputsCS` use `terminology.hl7.org` URLs, but the terminology server at tx.fhir.org could not look up their codes on 18 November 2026. The codes `Artificial-Intelligence` and `AIInputPrompt` are taken from the HL7 package. The code `AIAST` was found on tx.fhir.org.

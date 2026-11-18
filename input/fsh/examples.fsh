@@ -7,8 +7,8 @@ Description: "The coding agent that drafted this implementation guide."
 * manufacturer = "Anthropic"
 * deviceName.name = "Claude Code"
 * deviceName.type = #user-friendly-name
-* type.coding[0] = http://hl7.org/fhir/uv/aitransparency/CodeSystem/AIdeviceTypeCS#Artificial-Intelligence
-* type.coding[+] = AIAgentTypeCS#coding-agent
+* type = $ai-device-type#Artificial-Intelligence
+* extension[aiKind].valueCodeableConcept = AIAgentTypeCS#coding-agent
 * version.value = "claude-fable-5-2"
 
 Instance: ExampleReviewer
@@ -30,12 +30,15 @@ Description: "Illustrates how to record that an agent created the profiles of th
 * target[+] = Reference(StructureDefinition/agent-authoring-provenance)
 * recorded = "2026-11-18T18:00:00+01:00"
 * activity = $data-operation#CREATE
-* reason[aiReason] = $obs-value#AIAST
+* reason[AIReason] = $obs-value#AIAST
 * entity[inputPrompt].role = #derivation
 * entity[inputPrompt].what = Reference(ExampleInputPrompt)
-* agent[author].who = Reference(ExampleCodingAgent)
-* agent[author].onBehalfOf = Reference(ExampleReviewer)
-* agent[verifier].who = Reference(ExampleReviewer)
+* agent[AIagent].type = $participant-type#author
+* agent[AIagent].role[AIrole] = $ai-device-type#Artificial-Intelligence
+* agent[AIagent].who = Reference(ExampleCodingAgent)
+* agent[AIagent].onBehalfOf = Reference(ExampleReviewer)
+* agent[Humanagent].type = $participant-type#verifier
+* agent[Humanagent].who = Reference(ExampleReviewer)
 * extension[toolUsed][0].extension[type].valueCode = #cli-tool
 * extension[toolUsed][=].extension[name].valueString = "SUSHI"
 * extension[toolUsed][=].extension[source].valueUrl = "https://github.com/FHIR/sushi"
@@ -46,12 +49,13 @@ Description: "Illustrates how to record that an agent created the profiles of th
 * extension[toolUsed][=].extension[name].valueString = "AGENTS.md"
 
 Instance: ExampleInputPrompt
-InstanceOf: DocumentReference
+InstanceOf: http://hl7.org/fhir/uv/aitransparency/StructureDefinition/AI-InputPrompt
 Usage: #example
 Title: "Example input prompt"
 Description: "The prompts that the coding agent worked from, published on the development page of this guide."
 * meta.security = $obs-value#AIAST
 * status = #current
+* type = http://terminology.hl7.org/CodeSystem/AIinputsCS#AIInputPrompt
 * description = "Prompts given to the coding agent while it drafted this implementation guide"
 * content.attachment.contentType = #text/html
 * content.attachment.url = "https://build.fhir.org/ig/hl7ch/agentic-ig/development.html"
