@@ -31,7 +31,7 @@ Give the agent the same build entry point a human uses. This repository has a `_
 ./_build.sh            # SUSHI and the IG Publisher, several minutes
 ```
 
-The script runs the IG Publisher in the `hl7fhir/ig-publisher-base` container, so the agent does not need Ruby and Jekyll on the host.
+The script runs the IG Publisher directly when SUSHI and Jekyll are installed, as on the GitHub runner, and in the `hl7fhir/ig-publisher-base` container otherwise, so a local agent does not need Ruby and Jekyll on the host.
 
 #### 3. Install skills for the tool chain
 
@@ -119,6 +119,8 @@ Splitting work across agents helps when the tasks are independent, for example o
 ### Running an agent in continuous integration
 
 An agent in a pipeline can triage a failed build, comment on a pull request with the cause of new QA errors, or open a pull request for a dependency update. Give it read access to the repository and the build output, and let it propose changes through pull requests that a human merges.
+
+This guide runs such a set-up itself: an agent turns issues into pull requests and responds to review comments. The [contributing](contributing.html) page describes the workflows, the safeguards and the limits.
 
 ### Recording the contribution
 

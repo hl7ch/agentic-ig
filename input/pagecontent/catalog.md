@@ -3,10 +3,10 @@ This page lists what was publicly available for agent-assisted IG work on 18 Nov
 Each entry carries one of three check levels:
 
 - **Source read**: the project's own repository or documentation page was read for this catalogue.
-- **Used**: the tool was available as a connector in the agent session that wrote this guide, so its tool names were seen first hand.
+- **Used**: the tool is used in this project, or was available as a connector in the agent session that wrote this guide, so it was seen first hand.
 - **Listed only**: the entry was found in a directory or a meeting summary and was not confirmed at its source.
 
-No entry was installed and exercised end to end for this catalogue. Install commands are quoted from the project's own page unless a note says otherwise.
+Apart from the entries marked "Used", no entry was installed and exercised end to end for this catalogue. Install commands are quoted from the project's own page unless a note says otherwise.
 
 ### Kinds of capability
 
@@ -120,6 +120,13 @@ These servers read and write data on a FHIR server. They are outside IG authorin
 {: .grid}
 
 A maintained directory of further servers is [awesome-healthcare-mcp-servers](https://github.com/rdmgator12/awesome-healthcare-mcp-servers).
+
+### Agents in continuous integration
+
+| Name | Source | What it covers | Check |
+|---|---|---|---|
+| Claude Code GitHub Actions | [anthropics/claude-code-action](https://github.com/anthropics/claude-code-action), [documentation](https://code.claude.com/docs/en/github-actions) | Runs a coding agent in a GitHub workflow, on a mention or on any event with a prompt. It authenticates with an API key or with a token from a Claude subscription, and writes a run log with the model and token usage. This guide uses it to turn issues into pull requests and to respond to review comments; see [contributing](contributing.html). | Source read, Used |
+{: .grid}
 
 ### Command line tools the agent runs directly
 

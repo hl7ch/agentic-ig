@@ -5,7 +5,7 @@ This repository is a FHIR R4 implementation guide written in FHIR Shorthand (FSH
 ## Build
 
 - `./_build.sh sushi` compiles FSH only. Run it after every FSH edit. It must report 0 errors and 0 warnings.
-- `./_build.sh` runs SUSHI and the IG Publisher in a container. It takes several minutes and needs Docker. Run it before you report a change as done.
+- `./_build.sh` runs SUSHI and the IG Publisher. It takes several minutes. It runs the tools directly when SUSHI and Jekyll are installed, as on the GitHub runner, and in a Docker container otherwise. Run it before you report a change as done.
 - After a full build, read `output/qa.json` (`errs`, `warnings`, `hints`) and `output/qa.html` for the messages. `errs` must be 0.
 - Run only one full build at a time in a working copy.
 

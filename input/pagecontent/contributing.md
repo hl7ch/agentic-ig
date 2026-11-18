@@ -1,11 +1,12 @@
-Anyone can propose an addition to this guide with a GitHub issue. An AI agent turns an accepted issue into a pull request, and a human reviews the pull request before it is merged. This page describes the set-up so that other IG projects can copy it.
+Anyone can propose an addition to this guide with a GitHub issue. An AI agent turns the issue into a pull request and responds to comments on it, and a human reviews the pull request before it is merged. This page describes the set-up so that other IG projects can copy it.
 
 ### How to contribute
 
 1. Open an issue in the [repository](https://github.com/hl7ch/agentic-ig/issues/new/choose). Use "Add or correct a catalogue entry" for a skill, plugin, MCP server or tool, and "Feature request" for anything else.
 2. Until 25 November 2026, the agent starts at once. From 26 November 2026, a maintainer reads the issue first and approves it with the label `agent`.
 3. The agent implements the issue, and a pull request appears, linked to the issue. If the agent finds the issue unclear or out of scope, it makes no change and says why in a comment.
-4. A maintainer reviews the pull request and merges it or asks for changes.
+4. A maintainer reviews the pull request. A comment or a review on the pull request starts the agent again, and it pushes a further commit in response.
+5. The maintainer merges the pull request.
 
 ### What happens in a run
 
@@ -27,12 +28,12 @@ Anyone can propose an addition to this guide with a GitHub issue. An AI agent tu
 | File | Purpose |
 |---|---|
 | `.github/ISSUE_TEMPLATE/` | Issue forms that collect what the agent needs |
+| `.github/workflows/agent-issue-to-pr.yml` | Decides whether a run starts, runs the agent and opens the pull request |
 | `.github/workflows/agent-pr-follow-up.yml` | Runs the agent on every comment or review of a pull request |
 | `.github/scripts/agent-pr-context.sh` | Collects the issue and all pull request comments for a follow-up run |
-| `.github/workflows/agent-issue-to-pr.yml` | Decides whether a run starts, runs the agent and opens the pull request |
 | `.github/scripts/install-toolchain.sh` | Installs the build tools on the runner |
 | `.github/scripts/agent-usage.py` | Turns the agent's run log into the usage report |
-| `.claude/skills/issue-to-pr/SKILL.md` | Tells the agent how to implement an issue |
+| `.claude/skills/issue-to-pr/SKILL.md` | Tells the agent how to implement an issue and how to respond to pull request comments |
 | `.claude/skills/ig-qa-loop/SKILL.md` | Tells the agent how to build and fix QA errors |
 | `AGENTS.md` | Build commands, layout, conventions and limits for every agent |
 {: .grid}
@@ -54,7 +55,7 @@ These comments cannot start another agent run. They are posted with the workflow
 
 ### Model and token report
 
-Every pull request the agent opens ends with a usage report: the model, the input, cache and output tokens, the number of turns and the duration. The workflow computes it from the run log, so the figures do not depend on what the agent says about itself. The same report is posted on the issue, also when the agent made no change.
+Every pull request the agent opens ends with a usage report: the model, the input, cache and output tokens, the number of turns and the duration. The workflow computes it from the run log, so the figures do not depend on what the agent says about itself. The same report is posted on the issue, also when the agent made no change, and every follow-up run posts its own report on the pull request.
 
 ### Authentication
 
@@ -67,7 +68,7 @@ The model is Claude Opus 5.5 (`claude-opus-5-5`). Set the repository variable `A
 
 ### Safeguards
 
-- **Runs are bounded.** Each run is limited to 120 agent turns and 60 minutes, and runs for the same issue do not overlap.
+- **Runs are bounded.** Each run is limited to 120 agent turns and 60 minutes, and runs for the same issue or the same pull request do not overlap.
 - **The agent has a narrow tool set.** It can read and edit files, search and fetch web pages, and run the two build commands. It has no general shell, so it cannot read the token from the environment or push.
 - **The agent cannot change its own rules.** The skill forbids changes to workflows, skills, build scripts and instruction files, and the workflow discards any such change before it commits.
 - **The build is checked twice.** The agent builds during its run, and the HL7 ci-build builds the branch again. The ci-build does not set a status on the pull request, so the reviewer opens the linked QA report.

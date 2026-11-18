@@ -29,13 +29,15 @@ An IG repository suits agents well because every change can be checked by a tool
 
 ### How this guide was built
 
-An AI coding agent wrote this guide in a single session on 18 November 2026, including the research for the catalogue. The agent ran SUSHI and the IG Publisher and corrected the content until the build reported no errors. The catalogue states for each entry how far it was checked. No human has reviewed the content yet, so treat the catalogue as a starting point and confirm each entry at its source before you rely on it. The model, the token usage and the prompts are on the [development](development.html) page.
+An AI coding agent wrote the first version of this guide in a single session on 18 November 2026, including the research for the catalogue. The agent ran SUSHI and the IG Publisher and corrected the content until the build reported no errors. The model, the token usage and the prompts are on the [development](development.html) page.
 
-The repository also contains the agent set-up that the guidance describes: an `AGENTS.md` instruction file, a project skill in `.claude/skills/ig-qa-loop`, and a `_build.sh` script that the agent and a human run in the same way.
+Since then the guide is maintained through its own process: issues that an agent turns into pull requests, which the editor reviews and merges. The first version itself has not had a full human review. The catalogue states for each entry how far it was checked, so treat it as a starting point and confirm each entry at its source before you rely on it.
+
+The repository also contains the agent set-up that the guidance describes: an `AGENTS.md` instruction file, the project skills `ig-qa-loop` and `issue-to-pr` in `.claude/skills/`, a `_build.sh` script that the agent and a human run in the same way, and the GitHub workflows that run the agent on issues and pull request comments.
 
 ### Contributing
 
-Propose a catalogue entry or a feature with a GitHub issue. An agent turns accepted issues into pull requests, as the [contributing](contributing.html) page describes.
+Propose a catalogue entry or a feature with a GitHub issue. An agent turns the issue into a pull request and responds to comments on it, as the [contributing](contributing.html) page describes.
 
 ### Artifacts
 
