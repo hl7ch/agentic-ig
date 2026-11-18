@@ -12,8 +12,8 @@ releaseLabel: ci-build
 license: CC0-1.0
 jurisdiction: http://unstats.un.org/unsd/methods/m49/m49.htm#001 "World"
 publisher:
-  name: Agentic IG Demo
-  url: http://example.org
+  name: HL7 Switzerland
+  url: https://www.hl7.ch/
 
 pages:
   index.md:
