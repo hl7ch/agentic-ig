@@ -27,7 +27,7 @@ Anyone can propose an addition to this guide with a GitHub issue. An AI agent tu
 | File | Purpose |
 |---|---|
 | `.github/ISSUE_TEMPLATE/` | Issue forms that collect what the agent needs |
-| `.github/workflows/agent-pr-follow-up.yml` | Runs the agent on every comment or review of an agent pull request |
+| `.github/workflows/agent-pr-follow-up.yml` | Runs the agent on every comment or review of a pull request |
 | `.github/scripts/agent-pr-context.sh` | Collects the issue and all pull request comments for a follow-up run |
 | `.github/workflows/agent-issue-to-pr.yml` | Decides whether a run starts, runs the agent and opens the pull request |
 | `.github/scripts/install-toolchain.sh` | Installs the build tools on the runner |
@@ -81,8 +81,8 @@ This project ran a one-week trial, until 25 November 2026, in which every new is
 
 - A run reads the issue and the comments that exist when it starts. To add information afterwards, comment on the issue and ask a maintainer to add the label `agent`, which starts a new run. If the label is already there, the maintainer removes it and adds it again.
 - Labelling the same issue again starts a new run that replaces the branch and updates the pull request.
-- Every comment on an agent pull request starts a follow-up run, also a comment that asks for nothing. Such a run ends with a short reply and still uses tokens. Runs for the same pull request queue up, and each one reads all comments.
+- Every comment on a pull request starts a follow-up run, also a comment that asks for nothing. Such a run ends with a short reply and still uses tokens. Runs for the same pull request queue up, and each one reads all comments.
 - A review that approves the pull request does not start a run.
-- Follow-up runs work on pull requests from branches named `agent-issue-<number>` in this repository only. Other pull requests and pull requests from forks are ignored.
+- Follow-up runs work on every open pull request from a branch of this repository, also one a person opened, and the agent pushes its commit to that branch. Pull requests from forks are ignored.
 - Until 25 November 2026 anyone's comment starts a follow-up run. Afterwards the run is rejected unless the commenter has write access.
 - A new run from the issue label replaces the branch, including follow-up commits and commits you pushed yourself.

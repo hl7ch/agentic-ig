@@ -3,7 +3,7 @@
 # comments, then every comment, review and inline review comment of the pull
 # request. Run it inside a checkout of the pull request branch.
 #
-# Usage: agent-pr-context.sh <issue-number> <pr-number>
+# Usage: agent-pr-context.sh <issue-number or empty> <pr-number>
 # Needs GH_TOKEN and GITHUB_REPOSITORY.
 set -euo pipefail
 
@@ -11,7 +11,9 @@ issue="$1"
 pr="$2"
 repo="$GITHUB_REPOSITORY"
 
-if ! gh issue view "$issue" --repo "$repo" \
+if [ -z "$issue" ]; then
+  echo "# No issue is linked to this pull request by its branch name."
+elif ! gh issue view "$issue" --repo "$repo" \
   --json number,title,author,body,comments \
   --template '# Issue #{{.number}}: {{.title}}
 
@@ -29,6 +31,15 @@ fi
 
 echo
 echo "# Pull request #${pr}"
+echo
+gh pr view "$pr" --repo "$repo" --json title,author,body \
+  --template 'Title: {{.title}}
+Opened by {{.author.login}}.
+
+## Description
+
+{{.body}}
+'
 echo
 echo "Last commit on the branch: $(git log -1 --format='%cI by %an')"
 echo

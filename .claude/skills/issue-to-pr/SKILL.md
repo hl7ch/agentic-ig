@@ -67,7 +67,7 @@ Short version of the tool chain:
 
 ## Follow-up on a pull request
 
-A follow-up run starts when someone comments on or reviews a pull request that an agent opened. The working copy is then the pull request branch and already contains the earlier change. `.agent-issue.md` holds the issue first, then the pull request's conversation, its reviews and its inline review comments, each with author, role and date.
+A follow-up run starts when someone comments on or reviews a pull request. The working copy is then the pull request branch and already contains the earlier change. `.agent-issue.md` holds the issue first, if the branch belongs to one, then the pull request's description, its conversation, its reviews and its inline review comments, each with author, role and date. An agent or a person may have opened the pull request; the description says what it is for.
 
 1. **Find what is still open.** Read every comment. Compare the dates with the last commit on the branch, which the file states, and with earlier agent reports in the conversation. `git log` and `git diff origin/main...HEAD` show what the branch already changed. A comment is open when nothing after it has dealt with it.
 2. **Deal with each open comment.**
