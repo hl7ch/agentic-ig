@@ -22,7 +22,7 @@ Opened by {{.author.login}}.
 {{.body}}
 {{range .comments}}
 ---
-## Issue comment by {{.author.login}} ({{.authorAssociation}}) on {{.createdAt}}
+## Issue comment by {{.author.login}} on {{.createdAt}}
 
 {{.body}}
 {{end}}'; then
@@ -30,6 +30,7 @@ Opened by {{.author.login}}.
 fi
 
 echo
+"$(dirname "$0")/agent-roles.sh" "$issue" "$pr"
 echo "# Pull request #${pr}"
 echo
 gh pr view "$pr" --repo "$repo" --json title,author,body \
@@ -46,15 +47,15 @@ echo
 echo "## Conversation"
 echo
 gh api --paginate "repos/${repo}/issues/${pr}/comments" --jq '.[] |
-  "### Comment by \(.user.login) (\(.author_association)) on \(.created_at)\n\n\(.body)\n"'
+  "### Comment by \(.user.login) on \(.created_at)\n\n\(.body)\n"'
 
 echo "## Reviews"
 echo
 gh api --paginate "repos/${repo}/pulls/${pr}/reviews" --jq '.[] |
   select((.body // "") != "" or .state == "CHANGES_REQUESTED") |
-  "### Review by \(.user.login) (\(.author_association)), \(.state), on \(.submitted_at)\n\n\(.body)\n"'
+  "### Review by \(.user.login), \(.state), on \(.submitted_at)\n\n\(.body)\n"'
 
 echo "## Inline review comments"
 echo
 gh api --paginate "repos/${repo}/pulls/${pr}/comments" --jq '.[] |
-  "### On \(.path), line \(.line // .original_line // "unknown"), by \(.user.login) (\(.author_association)) on \(.created_at)\n\n\(.body)\n"'
+  "### On \(.path), line \(.line // .original_line // "unknown"), by \(.user.login) on \(.created_at)\n\n\(.body)\n"'

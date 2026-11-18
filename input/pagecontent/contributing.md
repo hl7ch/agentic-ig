@@ -32,6 +32,7 @@ Anyone can propose an addition to this guide with a GitHub issue. An AI agent tu
 | `.github/workflows/agent-pr-follow-up.yml` | Runs the agent on every comment or review of a pull request |
 | `.github/scripts/agent-pr-context.sh` | Collects the issue and all pull request comments for a follow-up run |
 | `.github/scripts/install-toolchain.sh` | Installs the build tools on the runner |
+| `.github/scripts/agent-roles.sh` | Tells the agent who is a maintainer, from the write access to the repository |
 | `.github/scripts/agent-usage.py` | Turns the agent's run log into the usage report |
 | `.claude/skills/issue-to-pr/SKILL.md` | Tells the agent how to implement an issue and how to respond to pull request comments |
 | `.claude/skills/ig-qa-loop/SKILL.md` | Tells the agent how to build and fix QA errors |
@@ -41,6 +42,10 @@ Anyone can propose an addition to this guide with a GitHub issue. An AI agent tu
 ### What the agent knows
 
 The agent starts with no memory of earlier runs. Everything it knows about this guide comes from three files in the repository: `AGENTS.md` for the build commands and conventions, the `ig-qa-loop` skill for the build loop, and the `issue-to-pr` skill for this workflow. When a run goes wrong because the agent lacked knowledge, the fix is a change to one of these files.
+
+### Who counts as a maintainer
+
+The agent treats a person as a maintainer when that person has write access to the repository. The workflow looks this up for everyone who wrote on the issue or the pull request and gives the agent the list. It does not use the role label that GitHub attaches to a comment: for a person whose organisation membership is private, a workflow sees that label as "contributor", and the agent then wrongly reported that no maintainer had commented.
 
 ### Notifications
 

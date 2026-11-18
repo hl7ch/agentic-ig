@@ -9,6 +9,7 @@
 - The agent workflows announce a run and its ci-build address at the start and notify the people involved at the end.
 - Every new issue starts the agent until 25 November 2026; afterwards a maintainer approves an issue with the label `agent`.
 - Added the development page with model, token usage and prompts.
+- The agent now learns who is a maintainer from the write access to the repository, not from GitHub's role label on a comment.
 - Follow-up runs merge the main branch into the pull request branch, and the agent resolves conflicts, so that pull requests stay mergeable.
 - Rule added: every issue a pull request covers gets its own change log line with a link to the issue.
 - Updated the home, guidance, catalogue and development pages to describe the issue and pull request workflows; added Claude Code GitHub Actions to the catalogue.

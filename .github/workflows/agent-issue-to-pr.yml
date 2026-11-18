@@ -106,10 +106,12 @@ jobs:
           {{.body}}
           {{range .comments}}
           ---
-          ## Comment by {{.author.login}} ({{.authorAssociation}}) on {{.createdAt}}
+          ## Comment by {{.author.login}} on {{.createdAt}}
 
           {{.body}}
           {{end}}' > "$ISSUE_FILE"
+          echo >> "$ISSUE_FILE"
+          ./.github/scripts/agent-roles.sh "$ISSUE_NUMBER" >> "$ISSUE_FILE"
           wc -c "$ISSUE_FILE"
 
       - name: Run the agent
