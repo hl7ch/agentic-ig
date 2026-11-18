@@ -71,9 +71,10 @@ A follow-up run starts when someone comments on or reviews a pull request. The w
 
 1. **Find what is still open.** Read every comment. Compare the dates with the last commit on the branch, which the file states, and with earlier agent reports in the conversation. `git log` and `git diff origin/main...HEAD` show what the branch already changed. A comment is open when nothing after it has dealt with it.
 2. **Deal with each open comment.**
-   - A request for a change: make it, within the rules above.
-   - A decision by a maintainer (role OWNER, MEMBER or COLLABORATOR) on a cardinality, must-support flag, binding or code: implement it. This is the approval that `AGENTS.md` asks for.
-   - The same kind of decision from someone else: do not implement it; list it as open for a maintainer.
+   - A request for a change: make it. This includes changes to profiles, extensions, terminology and examples.
+   - A request that states a cardinality, must-support flag, binding strength or code: implement it as stated, whoever asked. The comment is the instruction that `AGENTS.md` asks for, and a human reviews the result before it is merged. List every such change under "For the reviewer", with who asked for it, so that it is not overlooked.
+   - A request that needs such a decision but does not state it, for example "tighten this element": implement what is unambiguous, and ask for the missing decision in the summary. Do not pick a value yourself.
+   - Look up every code from an external terminology before you use it, also when the comment gives the code.
    - A question: answer it in the summary and change nothing for it.
    - A remark that asks for nothing, such as thanks: no action.
    - An inline comment refers to the file and line it names. Change that place, and other places only when the comment clearly applies to them too.

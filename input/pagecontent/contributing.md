@@ -77,6 +77,10 @@ Issue text and fetched web pages are untrusted input. The safeguards reduce what
 
 This project ran a one-week trial, until 25 November 2026, in which every new issue started the agent without a maintainer reading it first. That is the shortest path for contributors, and it has a cost: anyone with a GitHub account can start runs on the project's Claude account, and the first reader of an issue is the agent. After the trial a maintainer approves each issue with the label `agent`. The end date is a single value, `OPEN_INTAKE_UNTIL`, in the workflow file, and the workflow switches by itself.
 
+### What the agent may change
+
+The agent may change everything under `input/`: pages, profiles, extensions, terminology and examples. It implements a cardinality, must-support flag, binding or code when the issue or a comment states it, and lists each such change for the reviewer. It does not choose such a value on its own when nobody stated one; it then asks. It may not change workflows, skills, build scripts or instruction files.
+
 ### Limits
 
 - A run reads the issue and the comments that exist when it starts. To add information afterwards, comment on the issue and ask a maintainer to add the label `agent`, which starts a new run. If the label is already there, the maintainer removes it and adds it again.
