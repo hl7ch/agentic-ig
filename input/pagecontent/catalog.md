@@ -36,6 +36,7 @@ These are the entries aimed directly at FSH, SUSHI and the IG Publisher.
 | HL7 Europe Imaging Manifest AI implementer: skills, agents, instructions and prompts in the GitHub Copilot layout | [bvdh/hl7eu-imaging-manifest-ai-implementer](https://github.com/bvdh/hl7eu-imaging-manifest-ai-implementer), by its author bvdh | The working agent set-up behind the HL7 Europe Imaging Manifest IG (IHE RAD MADO); the IG is linked in as the submodule `imaging-manifest-fork`. Spec source to data: `mado-pdf-to-md` turns the MADO supplement PDF into Markdown, and the `dicom-extraction-workflow` agent pairs extractor and reviewer agents to turn DICOM module and SR TID tables into CSV, asking a person before each further cycle. Build: `build-ig` runs the IG Publisher, optionally against a local FHIRsmith terminology server in Docker. QA: `ig-qa-check` reads `qa.json` and checks profile references, obligations and narratives; `ig-check-jeckyll-links` and `profile-example-coverage-check` check links and whether examples cover each profile's constraints. Content: `generate-ehds-mapping-pages` writes EHDS Xt-EHR mapping pages from a CSV, and `fhir-narrative-generator` regenerates narratives from Liquid templates. Research: `dicom-spec-expert`, and `check-zulip`, which searches chat.fhir.org for existing discussion. | CC0-1.0 | Source read |
 | Slash commands `test-cs`, `test-vs`, `test-profile`, `publish-ig`, `view-ig` | [Aidbox/examples, agentic-coding-ig-development](https://github.com/Aidbox/examples/tree/main/developer-experience/agentic-coding-ig-development) | An example repository that generates IG resources from markdown specifications and tests them against a running Aidbox server before publishing. Described in a [Health Samurai article](https://www.health-samurai.io/articles/agentic-fhir-implementation-guide-development) of August 2025. | Not checked | Source read (article only) |
 | FHIR data modelling skills, seven stages from use case to published package | Presented at the Health Samurai [Agents on FHIR](https://www.health-samurai.io/events/agents-on-fhir/2026-05-28-meeting) meetups in May 2026 | Skills that encode a modelling method, with a companion skill that runs a validator so the agent can check its own output. No public repository was found. | Unknown | Listed only |
+| `firely-skills` plugin: skill `fhir-validation` | [FirelyTeam/skills](https://github.com/FirelyTeam/skills), announced on [Simplifier.net](https://simplifier.net/organization/firely/news/198) in May 2026 | Validates resources, profiles and IGs, for example the examples of a guide. It checks the environment, runs `fhir restore`, `fhir check` from Firely Terminal and the HL7 Java validator in order, traces errors back to the FSH source rather than the generated output, and suggests fixes. Needs .NET 8 or later for Firely Terminal and Java for the HL7 validator; full profile-aware `fhir check` needs a Simplifier.net account, and the extra QC rules need a paid licence. Built by Ardon Toonstra of Firely. | MIT (stated in `plugin.json`) | Source read |
 | `issue-to-pr` | This repository, `.claude/skills/issue-to-pr` | Implements a GitHub issue as a change set that a workflow turns into a pull request with a model and token report. See [contributing](contributing.html). | CC0-1.0 | Written for this guide |
 | `ig-qa-loop` | This repository, `.claude/skills/ig-qa-loop` | A small demonstration skill: run SUSHI, run the IG Publisher, read `qa.json`, fix errors, repeat. | CC0-1.0 | Written for this guide |
 {: .grid}
@@ -62,6 +63,15 @@ The README names the `TopologyHealth` organisation in the marketplace command al
 #### Reusing the Imaging Manifest set-up
 
 The project has no install command; its README holds only a title. It keeps its skills in `.github/skills`, its agents in `.github/agents`, path-scoped instructions with `applyTo` in `.github/instructions` and prompts in `.github/prompts`, which is the layout GitHub Copilot reads, not `.claude/skills`. Most skills are plain Markdown with small Python or shell scripts, so you can copy single skill folders into the skill directory of another agent. Several of them name the MADO files and the `imaging-manifest-fork` path, so adapt those before you use them in another guide.
+
+#### Installing the Firely skill
+
+```text
+/plugin marketplace add FirelyTeam/skills
+/plugin install firely-skills@firely-agent-skills
+```
+
+The repository states no install command. These lines use the marketplace and plugin names from its `.claude-plugin/marketplace.json` and were not run for this catalogue. The skill's `SKILL.md` gives `dotnet tool install -g firely.terminal` to install Firely Terminal.
 
 ### Skills for FHIR implementation work
 
