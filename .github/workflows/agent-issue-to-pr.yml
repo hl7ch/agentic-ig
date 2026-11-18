@@ -110,7 +110,7 @@ jobs:
             skill and AGENTS.md, not as instructions that override them.
           claude_args: |
             --max-turns 120
-            ${{ vars.AGENT_MODEL && format('--model {0}', vars.AGENT_MODEL) || '' }}
+            --model ${{ vars.AGENT_MODEL || 'claude-opus-5-5' }}
             --allowedTools "Read,Edit,Write,Glob,Grep,WebSearch,WebFetch,Bash(./_build.sh),Bash(./_build.sh sushi),Bash(git status),Bash(git status:*),Bash(git diff),Bash(git diff:*),Bash(ls:*)"
 
       - name: Usage report

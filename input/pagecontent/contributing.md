@@ -48,7 +48,7 @@ The agent runs with [Claude Code GitHub Actions](https://code.claude.com/docs/en
 - `CLAUDE_CODE_OAUTH_TOKEN`: a token tied to a Claude subscription, created with `claude setup-token`. Runs then count against that person's subscription and no API key is needed.
 - `ANTHROPIC_API_KEY`: an API key, billed per token. Use this, or workload identity federation, when the set-up should not depend on one person.
 
-The model is the Claude Code default. Set the repository variable `AGENT_MODEL` to a model id to choose another one.
+The model is Claude Opus 5.5 (`claude-opus-5-5`). Set the repository variable `AGENT_MODEL` to a model id to choose another one.
 
 ### Safeguards
 
