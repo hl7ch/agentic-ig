@@ -4,3 +4,4 @@
 - Catalogue of skills, plugins and MCP servers for IG work.
 - Guidance for setting up an IG repository for agents and for the working loop.
 - Profiles AI Agent Device and Agent Authoring Provenance, extension Agent Tool Used, and two code systems with value sets.
+- Added the development page with model, token usage and prompts.
