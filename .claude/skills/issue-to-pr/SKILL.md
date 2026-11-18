@@ -45,7 +45,7 @@ Short version of the tool chain:
    - Do not decide cardinality, must-support, binding strength or a code from an external terminology on your own. If the issue states the decision, implement it. If it does not, implement the rest and list the open decision in the summary.
    - Add or update an example for every profile you change.
 
-4. **Update the change log.** Add one line to the top section of `input/pagecontent/changes.md`.
+4. **Update the change log.** Follow the change log rule in `AGENTS.md`: add one line for this issue to the top section of `input/pagecontent/changes.md`, with a link to the issue.
 
 5. **Build.** Run `./_build.sh sushi` until it reports 0 errors and 0 warnings, then run `./_build.sh` once and read `output/qa.json`. Fix errors at their source and build again. Do not finish with `errs` above 0 unless the error was there before your change; if so, say that.
 
@@ -79,7 +79,12 @@ A follow-up run starts when someone comments on or reviews a pull request. The w
    - A remark that asks for nothing, such as thanks: no action.
    - An inline comment refers to the file and line it names. Change that place, and other places only when the comment clearly applies to them too.
 3. **Keep the earlier work.** Change what the comments ask for. Do not redo or revert parts of the branch that no comment questions.
-4. **Change log.** Keep one line for this issue in `input/pagecontent/changes.md` and update it if the change now does more or less than it says.
+4. **Change log.** Follow the change log rule in `AGENTS.md`. When you finish, `input/pagecontent/changes.md` must account for everything the pull request changes compared with the main branch:
+   - one line for every issue the pull request covers. Comments can bring in further issues, by number or by asking for something a second issue describes; each gets its own line with its own link.
+   - one line for every change that a comment asked for and that no issue describes, with a link to the pull request.
+   - an existing line updated when the change now does more or less than the line says.
+
+   Check this against `git diff origin/main...HEAD` and your own changes, not against the comments alone, and do it even when the comments do not mention the change log.
 5. **Build** as in step 5 above whenever you changed a file.
 6. **Write the summary** to `.agent-summary.md` with this structure. The workflow posts it as a comment on the pull request.
 

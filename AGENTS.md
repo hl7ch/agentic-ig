@@ -24,6 +24,13 @@ This repository is a FHIR R4 implementation guide written in FHIR Shorthand (FSH
 - Every code system sets `^caseSensitive` and every definitional resource sets `^experimental`.
 - Link to artifacts from pages with their generated file name, for example `StructureDefinition-ai-agent-device.html`.
 
+## Change log
+
+- Every change to the guide gets a line in the top section of `input/pagecontent/changes.md`.
+- A pull request has one line for each issue it covers, not one line for the whole pull request. The line says what changed for the reader of the guide and ends with a link to the issue, for example `([#12](https://github.com/hl7ch/agentic-ig/issues/12))`.
+- A change that no issue describes links to the pull request instead.
+- Before you finish, compare the change log with the full diff of the branch and add what is missing.
+
 ## Ask before you
 
 - change a cardinality, a must-support flag or a binding strength

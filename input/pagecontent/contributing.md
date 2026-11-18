@@ -82,6 +82,8 @@ This project ran a one-week trial, until 25 November 2026, in which every new is
 
 The agent may change everything under `input/`: pages, profiles, extensions, terminology and examples. It implements a cardinality, must-support flag, binding or code when the issue or a comment states it, and lists each such change for the reviewer. It does not choose such a value on its own when nobody stated one; it then asks. It may not change workflows, skills, build scripts or instruction files.
 
+Every issue that a pull request covers gets its own line in the [change log](changes.html), with a link to the issue. This also holds for issues and requests that come in later through comments on the pull request.
+
 ### Limits
 
 - A run reads the issue and the comments that exist when it starts. To add information afterwards, comment on the issue and ask a maintainer to add the label `agent`, which starts a new run. If the label is already there, the maintainer removes it and adds it again.
