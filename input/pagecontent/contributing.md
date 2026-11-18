@@ -13,6 +13,7 @@ Anyone can propose an addition to this guide with a GitHub issue. An AI agent tu
 |---|---|---|
 | Start | Contributor or maintainer | Until 25 November 2026 every new issue starts a run. Afterwards a maintainer starts the run by adding the label `agent`, and the run is rejected unless that person has write access. The label also starts a further run at any time. |
 | Prepare | Workflow | Checks out the repository, installs SUSHI, Jekyll and the IG Publisher on the runner, and writes the issue with all its comments to a file for the agent. |
+| Announce | Workflow | Comments on the issue that an agent has picked it up, with the model and the address where the ci-build will publish the branch. |
 | Implement | Agent | Follows the `issue-to-pr` skill: classifies the issue, checks sources, edits the files, builds, and writes a summary. |
 | Report | Workflow | Reads the model and the token counts from the agent's run log. |
 | Open pull request | Workflow | Commits the changes to the branch `agent-issue-<number>` and opens the pull request with the agent's summary, the QA counts and the usage report. |
@@ -39,6 +40,17 @@ Anyone can propose an addition to this guide with a GitHub issue. An AI agent tu
 ### What the agent knows
 
 The agent starts with no memory of earlier runs. Everything it knows about this guide comes from three files in the repository: `AGENTS.md` for the build commands and conventions, the `ig-qa-loop` skill for the build loop, and the `issue-to-pr` skill for this workflow. When a run goes wrong because the agent lacked knowledge, the fix is a change to one of these files.
+
+### Notifications
+
+The workflow posts two comments per run, on the issue for a first run and on the pull request for a follow-up run:
+
+- at the start, that an agent has picked up the work, with the model and the ci-build address of the branch
+- at the end, the result, with the pull request or commit, the ci-build links and the usage report
+
+The closing comment mentions the person who opened the issue and the person who started the run, so GitHub notifies them in the way they have configured, by e-mail or in the web interface.
+
+These comments cannot start another agent run. They are posted with the workflow's own token, and GitHub starts no workflow for events from that token. The follow-up workflow also ignores every comment from a bot account.
 
 ### Model and token report
 

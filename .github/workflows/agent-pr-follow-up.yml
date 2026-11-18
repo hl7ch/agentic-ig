@@ -85,6 +85,27 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      # Comments from this workflow are posted with the workflow token. GitHub
+      # starts no workflow for events from that token, and the gate also ignores
+      # bot accounts, so these comments cannot start another agent run.
+      - name: Announce the run on the pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODEL: ${{ vars.AGENT_MODEL || 'claude-opus-5-5' }}
+        run: |
+          {
+            echo "An AI agent (\`${MODEL}\`) is reading the comments on this pull request."
+            echo
+            echo "If it makes a change, it pushes a commit to \`${BRANCH}\`. The HL7 ci-build then publishes the new version, a few minutes after the push:"
+            echo "- Rendered guide: https://build.fhir.org/ig/${GITHUB_REPOSITORY}/branches/${BRANCH}/"
+            echo "- QA report: https://build.fhir.org/ig/${GITHUB_REPOSITORY}/branches/${BRANCH}/qa.html"
+            echo
+            echo "Until then the links show the previous version. A further comment follows here when the agent is done."
+            echo
+            echo "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          } > "$RUNNER_TEMP/start-comment.md"
+          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/start-comment.md"
+
       - name: Install the IG tool chain
         run: ./.github/scripts/install-toolchain.sh
 
@@ -168,14 +189,26 @@ jobs:
           CHANGED: ${{ steps.push.outputs.changed }}
           SHA: ${{ steps.push.outputs.sha }}
           QA: ${{ steps.push.outputs.qa }}
+          AUTHOR: ""
+          SENDER: ${{ github.event.sender.login }}
         run: |
+          # Mention the person who commented so that GitHub notifies them.
           {
+            mention=""
+            for login in "$AUTHOR" "$SENDER"; do
+              case "$login" in ""|*"[bot]") continue ;; esac
+              case " $mention " in *" @$login "*) ;; *) mention="$mention @$login" ;; esac
+            done
             if [ "${CHANGED:-}" = "true" ]; then
-              echo "The agent pushed ${SHA} in response to the comments."
+              echo "${mention:+${mention# } }The agent has finished and pushed ${SHA} in response to the comments."
+              echo
+              echo "HL7 ci-build of the branch, a few minutes after the push:"
+              echo "- Rendered guide: https://build.fhir.org/ig/${GITHUB_REPOSITORY}/branches/${BRANCH}/"
+              echo "- QA report: https://build.fhir.org/ig/${GITHUB_REPOSITORY}/branches/${BRANCH}/qa.html"
             elif [ "${CHANGED:-}" = "false" ]; then
-              echo "The agent read the comments and made no change."
+              echo "${mention:+${mention# } }The agent has finished. It read the comments and made no change."
             else
-              echo "The follow-up run did not complete. See the run log."
+              echo "${mention:+${mention# } }The follow-up run did not complete. See the run log."
             fi
             echo
             cat "$RUNNER_TEMP/summary.md" 2>/dev/null || true
