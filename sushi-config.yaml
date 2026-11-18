@@ -1,0 +1,40 @@
+id: ch.hl7.fhir.agentic-ig
+canonical: http://hl7.ch/fhir/ig/agentic-ig
+name: AgenticIGDemo
+title: Agentic FHIR IG Authoring (Demo)
+description: Demo implementation guide on maintaining and developing a FHIR implementation guide with AI coding agents. It catalogues the skills, plugins and MCP servers available for this work, gives guidance on how to use them, and defines a small set of profiles for recording which agent authored an artifact and which human verified it.
+status: draft
+experimental: true
+version: 0.1.0
+fhirVersion: 4.0.1
+copyrightYear: 2026+
+releaseLabel: ci-build
+license: CC0-1.0
+jurisdiction: http://unstats.un.org/unsd/methods/m49/m49.htm#001 "World"
+publisher:
+  name: Agentic IG Demo
+  url: http://example.org
+
+pages:
+  index.md:
+    title: Home
+  catalog.md:
+    title: Catalogue of Skills, Plugins and MCP Servers
+  guidance.md:
+    title: Guidance for Working with Agents
+  provenance.md:
+    title: Recording Agent Contributions
+  changes.md:
+    title: Change Log
+
+menu:
+  Home: index.html
+  Catalogue: catalog.html
+  Guidance: guidance.html
+  Recording Agent Work: provenance.html
+  Artifacts: artifacts.html
+  Change Log: changes.html
+
+parameters:
+  show-inherited-invariants: false
+  usage-stats-opt-out: true
