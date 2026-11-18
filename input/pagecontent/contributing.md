@@ -12,11 +12,11 @@ Anyone can propose an addition to this guide with a GitHub issue. An AI agent tu
 | Step | Done by | Detail |
 |---|---|---|
 | Start | Maintainer | Adds the label `agent`. The run is rejected unless the person who added the label has write access. |
-| Prepare | Workflow | Checks out the repository and installs SUSHI, Jekyll and the IG Publisher on the runner. |
+| Prepare | Workflow | Checks out the repository, installs SUSHI, Jekyll and the IG Publisher on the runner, and writes the issue with all its comments to a file for the agent. |
 | Implement | Agent | Follows the `issue-to-pr` skill: classifies the issue, checks sources, edits the files, builds, and writes a summary. |
 | Report | Workflow | Reads the model and the token counts from the agent's run log. |
-| Open pull request | Workflow | Commits the changes to the branch `agent/issue-<number>` and opens the pull request with the agent's summary, the QA counts and the usage report. |
-| Check | Build workflow | Builds the pull request again, independently of the agent, and fails on any IG Publisher error. |
+| Open pull request | Workflow | Commits the changes to the branch `agent-issue-<number>` and opens the pull request with the agent's summary, the QA counts and the usage report. |
+| Check | HL7 ci-build | Builds the branch on build.fhir.org after the push. The pull request links to the rendered guide and the QA report of the branch. |
 | Review | Maintainer | Reads the diff and the rendered pages, then merges. |
 {: .grid}
 
@@ -26,7 +26,6 @@ Anyone can propose an addition to this guide with a GitHub issue. An AI agent tu
 |---|---|
 | `.github/ISSUE_TEMPLATE/` | Issue forms that collect what the agent needs |
 | `.github/workflows/agent-issue-to-pr.yml` | Runs the agent on a labelled issue and opens the pull request |
-| `.github/workflows/build.yml` | Builds every pull request and the main branch |
 | `.github/scripts/install-toolchain.sh` | Installs the build tools on the runner |
 | `.github/scripts/agent-usage.py` | Turns the agent's run log into the usage report |
 | `.claude/skills/issue-to-pr/SKILL.md` | Tells the agent how to implement an issue |
@@ -56,13 +55,13 @@ The model is the Claude Code default. Set the repository variable `AGENT_MODEL` 
 - **A maintainer starts every run.** Opening an issue does not start the agent, so an outsider cannot spend the project's tokens or steer the agent without a maintainer reading the issue first.
 - **The agent has a narrow tool set.** It can read and edit files, search and fetch web pages, and run the two build commands. It has no general shell, so it cannot read the token from the environment or push.
 - **The agent cannot change its own rules.** The skill forbids changes to workflows, skills, build scripts and instruction files, and the workflow discards any such change before it commits.
-- **The build is checked twice.** The agent builds during its run, and the build workflow builds the pull request again.
+- **The build is checked twice.** The agent builds during its run, and the HL7 ci-build builds the branch again. The ci-build does not set a status on the pull request, so the reviewer opens the linked QA report.
 - **Nothing merges without a human.** The agent opens pull requests and never merges them.
 
 Issue text and fetched web pages are untrusted input. The safeguards reduce what a manipulated agent can do; they do not remove the need to read the diff.
 
 ### Limits
 
-- A run handles the issue title and body. It does not read later comments on the issue.
+- A run reads the issue and the comments that exist when the label is added. To add information afterwards, comment on the issue, then remove the label and add it again.
 - Labelling the same issue again starts a new run that replaces the branch and updates the pull request.
 - The agent does not respond to review comments on the pull request. Push fixes to the branch yourself or refine the issue and label it again.
