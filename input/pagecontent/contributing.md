@@ -3,15 +3,14 @@ Anyone can propose an addition to this guide with a GitHub issue. An AI agent tu
 ### How to contribute
 
 1. Open an issue in the [repository](https://github.com/hl7ch/agentic-ig/issues/new/choose). Use "Add or correct a catalogue entry" for a skill, plugin, MCP server or tool, and "Feature request" for anything else.
-2. A maintainer reads the issue. If it is in scope, the maintainer adds the label `agent`.
-3. The agent implements the issue and a pull request appears, linked to the issue.
-4. A maintainer reviews the pull request and merges it or asks for changes.
+2. The agent starts at once, implements the issue, and a pull request appears, linked to the issue. If the agent finds the issue unclear or out of scope, it makes no change and says why in a comment.
+3. A maintainer reviews the pull request and merges it or asks for changes.
 
 ### What happens in a run
 
 | Step | Done by | Detail |
 |---|---|---|
-| Start | Maintainer | Adds the label `agent`. The run is rejected unless the person who added the label has write access. |
+| Start | Contributor | Opens an issue. Every new issue starts a run. A maintainer can start a further run by adding the label `agent`. |
 | Prepare | Workflow | Checks out the repository, installs SUSHI, Jekyll and the IG Publisher on the runner, and writes the issue with all its comments to a file for the agent. |
 | Implement | Agent | Follows the `issue-to-pr` skill: classifies the issue, checks sources, edits the files, builds, and writes a summary. |
 | Report | Workflow | Reads the model and the token counts from the agent's run log. |
@@ -25,7 +24,7 @@ Anyone can propose an addition to this guide with a GitHub issue. An AI agent tu
 | File | Purpose |
 |---|---|
 | `.github/ISSUE_TEMPLATE/` | Issue forms that collect what the agent needs |
-| `.github/workflows/agent-issue-to-pr.yml` | Runs the agent on a labelled issue and opens the pull request |
+| `.github/workflows/agent-issue-to-pr.yml` | Runs the agent on every new issue and opens the pull request |
 | `.github/scripts/install-toolchain.sh` | Installs the build tools on the runner |
 | `.github/scripts/agent-usage.py` | Turns the agent's run log into the usage report |
 | `.claude/skills/issue-to-pr/SKILL.md` | Tells the agent how to implement an issue |
@@ -52,7 +51,7 @@ The model is the Claude Code default. Set the repository variable `AGENT_MODEL` 
 
 ### Safeguards
 
-- **A maintainer starts every run.** Opening an issue does not start the agent, so an outsider cannot spend the project's tokens or steer the agent without a maintainer reading the issue first.
+- **Runs are bounded.** Each run is limited to 120 agent turns and 60 minutes, and runs for the same issue do not overlap.
 - **The agent has a narrow tool set.** It can read and edit files, search and fetch web pages, and run the two build commands. It has no general shell, so it cannot read the token from the environment or push.
 - **The agent cannot change its own rules.** The skill forbids changes to workflows, skills, build scripts and instruction files, and the workflow discards any such change before it commits.
 - **The build is checked twice.** The agent builds during its run, and the HL7 ci-build builds the branch again. The ci-build does not set a status on the pull request, so the reviewer opens the linked QA report.
@@ -60,8 +59,10 @@ The model is the Claude Code default. Set the repository variable `AGENT_MODEL` 
 
 Issue text and fetched web pages are untrusted input. The safeguards reduce what a manipulated agent can do; they do not remove the need to read the diff.
 
+This project starts the agent on every new issue, without a maintainer reading it first. That is the shortest path for contributors, and it has a cost: anyone with a GitHub account can start runs on the project's Claude account, and the first reader of an issue is the agent. A project that cannot accept this should start runs from a label that only maintainers can add; the workflow file says which two lines to change.
+
 ### Limits
 
-- A run reads the issue and the comments that exist when the label is added. To add information afterwards, comment on the issue, then remove the label and add it again.
+- A run reads the issue and the comments that exist when it starts. To add information afterwards, comment on the issue and ask a maintainer to add the label `agent`, which starts a new run. If the label is already there, the maintainer removes it and adds it again.
 - Labelling the same issue again starts a new run that replaces the branch and updates the pull request.
-- The agent does not respond to review comments on the pull request. Push fixes to the branch yourself or refine the issue and label it again.
+- The agent does not respond to review comments on the pull request. Push fixes to the branch yourself or refine the issue and start a new run with the label.

@@ -1,12 +1,16 @@
 name: Agent - issue to pull request
 
-# A maintainer adds the label "agent" to an issue. The agent implements the
-# issue in the working copy, this workflow opens the pull request and adds the
-# model and token report. The action rejects the run unless the person who
-# added the label has write access, so nobody outside the project can start one.
+# Every new issue starts the agent. The agent implements the issue in the
+# working copy, this workflow opens the pull request and adds the model and
+# token report. Adding the label "agent" to an issue starts a new run, for
+# example after further comments.
+#
+# Anyone with a GitHub account can open an issue, so anyone can start a run
+# on the configured Claude account. To require a maintainer again, remove
+# "opened" below and the allowed_non_write_users input.
 on:
   issues:
-    types: [labeled]
+    types: [opened, labeled]
 
 concurrency:
   group: agent-issue-${{ github.event.issue.number }}
@@ -14,7 +18,7 @@ concurrency:
 
 jobs:
   implement:
-    if: github.event.label.name == 'agent'
+    if: github.event.action == 'opened' || github.event.label.name == 'agent'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
@@ -60,6 +64,9 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Both inputs are needed to accept issues from people without write access.
+          github_token: ${{ github.token }}
+          allowed_non_write_users: "*"
           prompt: |
             Follow the issue-to-pr skill in .claude/skills/issue-to-pr/SKILL.md to implement
             GitHub issue #${{ github.event.issue.number }} of ${{ github.repository }}.

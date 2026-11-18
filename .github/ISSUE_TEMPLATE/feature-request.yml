@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        A maintainer reviews this issue. When the maintainer adds the label `agent`, an AI agent implements the request and opens a pull request, which a human reviews before it is merged.
+        When you submit this issue, an AI agent implements the request and opens a pull request, which a human reviews before it is merged.
   - type: textarea
     id: need
     attributes:
