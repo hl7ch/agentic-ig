@@ -69,12 +69,12 @@ Short version of the tool chain:
 
 A follow-up run starts when someone comments on or reviews a pull request. The working copy is then the pull request branch and already contains the earlier change. `.agent-issue.md` holds the issue first, if the branch belongs to one, then the pull request's description, its conversation, its reviews and its inline review comments, each with author and date; the "Roles" section says who is a maintainer. An agent or a person may have opened the pull request; the description says what it is for.
 
-0. **Make the branch mergeable.** A pull request must merge into the main branch without conflicts. The workflow merges the main branch into the working copy before you start, and `.agent-issue.md` begins with the result under "State of the branch".
+0. **Make the branch mergeable.** A pull request must merge into the main branch without conflicts. The workflow merges the main branch into the branch and commits that merge before you start, and `.agent-issue.md` begins with the result under "State of the branch".
    - If it lists files with conflicts, resolve them first. Each has conflict markers: the part between `<<<<<<<` and `=======` is this branch, the part between `=======` and `>>>>>>>` is the main branch. Keep what both sides intended and remove every marker line.
    - In `input/pagecontent/changes.md` a conflict almost always means both sides added lines. Keep all lines from both sides, each once.
    - In any other file, read both versions and the comments before you choose. If the two sides contradict each other and you cannot tell which is wanted, keep the main branch's version, apply this pull request's change on top where that is still possible, and describe the conflict under "For the reviewer".
-   - Files that the merge changed without conflict are not your changes. Leave them alone.
-   - Do not commit the merge; the workflow does that. List the conflicts you resolved in the summary.
+   - `git status` does not list the conflicted files, because the merge is already committed with the markers in it. Rely on the list in `.agent-issue.md`, and search each listed file for `<<<<<<<` when you are done.
+   - List the conflicts you resolved in the summary.
 
 1. **Find what is still open.** Read every comment. Compare the dates with the last commit on the branch, which the file states, and with earlier agent reports in the conversation. `git log` and `git diff origin/main...HEAD` show what the branch already changed. A comment is open when nothing after it has dealt with it.
 2. **Deal with each open comment.**

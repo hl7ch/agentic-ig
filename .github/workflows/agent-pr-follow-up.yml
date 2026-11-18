@@ -87,10 +87,13 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      # A pull request must be mergeable. Merge the main branch into the working
-      # copy before the agent starts; the agent resolves conflicts in content
-      # files, and the push step commits the merge. This step is inline because
-      # an older branch does not have the current scripts until it is merged.
+      # A pull request must be mergeable. Merge the main branch into the branch
+      # before the agent starts and commit the merge locally, with conflict
+      # markers if there are conflicts in content files. The agent resolves
+      # them and the push step amends the merge commit. The merge is committed
+      # at once because the agent action resets an uncommitted merge. This
+      # step is inline because an older branch does not have the current
+      # scripts until it is merged.
       - name: Merge the main branch into the working copy
         id: merge
         env:
@@ -100,8 +103,10 @@ jobs:
           protected='^(\.github/|\.claude/|AGENTS\.md$|CLAUDE\.md$|_build\.sh$|ig\.ini$)'
           merge=uptodate
           : > "$RUNNER_TEMP/conflicts.txt"
+          git config user.name "claude[bot]"
+          git config user.email "41898282+claude[bot]@users.noreply.github.com"
           if ! git merge-base --is-ancestor "$BASE" HEAD; then
-            if git merge --no-commit --no-ff "$BASE" > /dev/null 2>&1; then
+            if git merge --no-ff -m "Merge the main branch into ${BRANCH}" "$BASE" > /dev/null 2>&1; then
               merge=clean
             else
               git diff --name-only --diff-filter=U > "$RUNNER_TEMP/conflicts.txt"
@@ -110,6 +115,8 @@ jobs:
                 merge=blocked
               else
                 merge=conflict
+                git add -A
+                git commit -q -m "Merge the main branch into ${BRANCH}"
               fi
             fi
           fi
@@ -121,9 +128,9 @@ jobs:
             echo
             case "$merge" in
               uptodate) echo "The branch already contains the current main branch. There is nothing to merge." ;;
-              clean) echo "The workflow merged the current main branch into the working copy, without conflicts. The merge is not committed yet, so \`git status\` shows files that the merge changed. They are not your changes; leave them as they are." ;;
+              clean) echo "The workflow merged the current main branch into this branch, without conflicts. There is nothing for you to do about the merge." ;;
               conflict)
-                echo "The workflow merged the current main branch into the working copy. These files have conflicts and contain conflict markers. Resolve them before anything else:"
+                echo "The workflow merged the current main branch into this branch. These files have conflicts and contain conflict markers. \`git status\` does not show them, because the merge is already committed. Resolve them before anything else:"
                 echo
                 sed 's/^/- /' "$RUNNER_TEMP/conflicts.txt" ;;
               blocked)
@@ -219,7 +226,7 @@ jobs:
 
           # The agent may not change its own rules or the build set-up. Put the
           # snapshot from before the agent run back.
-          rm -rf .github .claude
+          rm -rf .github .claude .claude-pr
           tar -xf "$RUNNER_TEMP/protected.tar"
 
           # Do not push a merge that still has conflict markers.
@@ -239,7 +246,16 @@ jobs:
           fi
           echo "qa=$qa" >> "$GITHUB_OUTPUT"
 
-          if [ -z "$(git status --porcelain)" ] && ! git rev-parse -q --verify MERGE_HEAD > /dev/null; then
+          # The merge step may have committed a merge. Fail if it got lost.
+          if [ "$MERGE" = "clean" ] || [ "$MERGE" = "conflict" ]; then
+            if ! git merge-base --is-ancestor "origin/${{ github.event.repository.default_branch }}" HEAD; then
+              echo "::error::The merge of the main branch is no longer in the working copy."
+              exit 1
+            fi
+          fi
+          dirty=false
+          if [ -n "$(git status --porcelain)" ]; then dirty=true; fi
+          if [ "$dirty" = "false" ] && [ "$(git rev-parse HEAD)" = "$(git rev-parse "origin/${BRANCH}")" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -247,8 +263,13 @@ jobs:
           git config user.email "41898282+claude[bot]@users.noreply.github.com"
           git add -A
           subject="Follow up on comments in pull request #${PR_NUMBER}"
-          if git rev-parse -q --verify MERGE_HEAD > /dev/null; then subject="Merge the main branch and follow up on comments in pull request #${PR_NUMBER}"; fi
-          git commit -q -m "$subject" -m "Written by an AI agent in ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          amend=""
+          if [ "$MERGE" = "conflict" ]; then
+            # Replace the merge commit that had conflict markers with the resolved one.
+            amend="--amend"
+            subject="Merge the main branch and follow up on comments in pull request #${PR_NUMBER}"
+          fi
+          if [ "$dirty" = "true" ] || [ -n "$amend" ]; then git commit -q $amend -m "$subject" -m "Written by an AI agent in ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"; fi
           git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${BRANCH}"
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
