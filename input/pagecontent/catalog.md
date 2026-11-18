@@ -35,6 +35,7 @@ These are the entries aimed directly at FSH, SUSHI and the IG Publisher.
 | `fhir-developer-skills` | [PhenoML/ClaudeFHIRSkill](https://github.com/PhenoML/ClaudeFHIRSkill) | One broad skill for FHIR R4, R4B and R5: resource modelling, FSH authoring with SUSHI and GoFSH, server and client code, SMART on FHIR. | Apache-2.0 | Source read |
 | Slash commands `test-cs`, `test-vs`, `test-profile`, `publish-ig`, `view-ig` | [Aidbox/examples, agentic-coding-ig-development](https://github.com/Aidbox/examples/tree/main/developer-experience/agentic-coding-ig-development) | An example repository that generates IG resources from markdown specifications and tests them against a running Aidbox server before publishing. Described in a [Health Samurai article](https://www.health-samurai.io/articles/agentic-fhir-implementation-guide-development) of August 2025. | Not checked | Source read (article only) |
 | FHIR data modelling skills, seven stages from use case to published package | Presented at the Health Samurai [Agents on FHIR](https://www.health-samurai.io/events/agents-on-fhir/2026-05-28-meeting) meetups in May 2026 | Skills that encode a modelling method, with a companion skill that runs a validator so the agent can check its own output. No public repository was found. | Unknown | Listed only |
+| `firely-skills` plugin: skill `fhir-validation` | [FirelyTeam/skills](https://github.com/FirelyTeam/skills), announced on [Simplifier.net](https://simplifier.net/organization/firely/news/198) in May 2026 | Validates resources, profiles and IGs, for example the examples of a guide. It checks the environment, runs `fhir restore`, `fhir check` from Firely Terminal and the HL7 Java validator in order, traces errors back to the FSH source rather than the generated output, and suggests fixes. Needs .NET 8 or later for Firely Terminal and Java for the HL7 validator; full profile-aware `fhir check` needs a Simplifier.net account, and the extra QC rules need a paid licence. Built by Ardon Toonstra of Firely. | MIT (stated in `plugin.json`) | Source read |
 | `issue-to-pr` | This repository, `.claude/skills/issue-to-pr` | Implements a GitHub issue as a change set that a workflow turns into a pull request with a model and token report. See [contributing](contributing.html). | CC0-1.0 | Written for this guide |
 | `ig-qa-loop` | This repository, `.claude/skills/ig-qa-loop` | A small demonstration skill: run SUSHI, run the IG Publisher, read `qa.json`, fix errors, repeat. | CC0-1.0 | Written for this guide |
 {: .grid}
@@ -57,6 +58,15 @@ The project's README lists install lines for the `cql`, `fhir`, `clinical-reason
 ```
 
 The README names the `TopologyHealth` organisation in the marketplace command although the repository was reached under `PhenoML`.
+
+#### Installing the Firely skill
+
+```text
+/plugin marketplace add FirelyTeam/skills
+/plugin install firely-skills@firely-agent-skills
+```
+
+The repository states no install command. These lines use the marketplace and plugin names from its `.claude-plugin/marketplace.json` and were not run for this catalogue. The skill's `SKILL.md` gives `dotnet tool install -g firely.terminal` to install Firely Terminal.
 
 ### Skills for FHIR implementation work
 
