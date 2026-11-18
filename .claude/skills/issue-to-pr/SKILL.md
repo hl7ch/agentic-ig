@@ -1,7 +1,7 @@
 ---
 name: issue-to-pr
 description: Implement a GitHub issue of this implementation guide as a change set that a workflow turns into a pull request. Use when asked to implement an issue, when run by the "Agent - issue to pull request" workflow, or when a contributor asks for a catalogue entry or a feature.
-allowed-tools: Read, Edit, Write, Glob, Grep, WebSearch, WebFetch, Bash(./_build.sh), Bash(./_build.sh sushi), Bash(git status:*), Bash(git diff:*), Bash(ls:*)
+allowed-tools: Read, Edit, Write, Glob, Grep, WebSearch, WebFetch, Bash(./_build.sh), Bash(./_build.sh sushi), Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(ls:*)
 ---
 
 # Issue to pull request
@@ -65,6 +65,34 @@ Short version of the tool chain:
 
    Do not state the model or token count; the workflow adds those from the run log.
 
+## Follow-up on a pull request
+
+A follow-up run starts when someone comments on or reviews a pull request that an agent opened. The working copy is then the pull request branch and already contains the earlier change. `.agent-issue.md` holds the issue first, then the pull request's conversation, its reviews and its inline review comments, each with author, role and date.
+
+1. **Find what is still open.** Read every comment. Compare the dates with the last commit on the branch, which the file states, and with earlier agent reports in the conversation. `git log` and `git diff origin/main...HEAD` show what the branch already changed. A comment is open when nothing after it has dealt with it.
+2. **Deal with each open comment.**
+   - A request for a change: make it, within the rules above.
+   - A decision by a maintainer (role OWNER, MEMBER or COLLABORATOR) on a cardinality, must-support flag, binding or code: implement it. This is the approval that `AGENTS.md` asks for.
+   - The same kind of decision from someone else: do not implement it; list it as open for a maintainer.
+   - A question: answer it in the summary and change nothing for it.
+   - A remark that asks for nothing, such as thanks: no action.
+   - An inline comment refers to the file and line it names. Change that place, and other places only when the comment clearly applies to them too.
+3. **Keep the earlier work.** Change what the comments ask for. Do not redo or revert parts of the branch that no comment questions.
+4. **Change log.** Keep one line for this issue in `input/pagecontent/changes.md` and update it if the change now does more or less than it says.
+5. **Build** as in step 5 above whenever you changed a file.
+6. **Write the summary** to `.agent-summary.md` with this structure. The workflow posts it as a comment on the pull request.
+
+   ```markdown
+   ### Response to comments
+   - @author, date: what they asked, and what you did or why you did not
+
+   ### How it was checked
+   - sources you fetched, final SUSHI result and IG Publisher errs, warnings and hints
+
+   ### For the reviewer
+   - decisions still open and anything you could not verify
+   ```
+
 ## When you make no change
 
-Still write `.agent-summary.md`, with the reason under "For the reviewer". The workflow posts it on the issue.
+Still write `.agent-summary.md`, with the reason under "For the reviewer". The workflow posts it on the issue, or on the pull request in a follow-up run.
