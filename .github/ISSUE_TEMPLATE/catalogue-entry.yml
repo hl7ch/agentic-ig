@@ -1,0 +1,49 @@
+name: Add or correct a catalogue entry
+description: Propose a skill, plugin, MCP server or tool for the catalogue, or correct an existing entry.
+title: "Catalogue: "
+labels: ["catalogue"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A maintainer reviews this issue. When the maintainer adds the label `agent`, an AI agent checks the source and opens a pull request, which a human reviews before it is merged.
+  - type: input
+    id: name
+    attributes:
+      label: Name
+      description: Name of the skill, plugin, MCP server or tool.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: Link to the project's own repository or documentation.
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options:
+        - Skill
+        - Plugin
+        - MCP server
+        - Slash command
+        - Subagent
+        - Command line tool
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: covers
+    attributes:
+      label: What it does for IG work
+      description: What does it help with when authoring or maintaining a FHIR implementation guide?
+    validations:
+      required: true
+  - type: textarea
+    id: experience
+    attributes:
+      label: Your experience with it
+      description: Optional. Have you used it, and with which agent and versions?

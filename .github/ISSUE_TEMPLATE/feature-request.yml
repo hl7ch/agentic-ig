@@ -1,0 +1,26 @@
+name: Feature request
+description: Propose a change to the guidance, the profiles, the terminology or the examples.
+title: "Feature: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A maintainer reviews this issue. When the maintainer adds the label `agent`, an AI agent implements the request and opens a pull request, which a human reviews before it is merged.
+  - type: textarea
+    id: need
+    attributes:
+      label: What do you need?
+      description: Describe the outcome you want, not the steps to get there.
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: Which part of the guide?
+      description: The page, profile or value set this concerns, if you know it.
+  - type: textarea
+    id: decisions
+    attributes:
+      label: Decisions already made
+      description: Cardinalities, bindings, codes or wording that are already agreed. The agent does not decide these on its own.

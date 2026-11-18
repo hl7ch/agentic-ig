@@ -24,6 +24,8 @@ pages:
     title: Guidance for Working with Agents
   provenance.md:
     title: Recording Agent Contributions
+  contributing.md:
+    title: Contributing with Issues and Agents
   development.md:
     title: How This Guide Was Developed
   changes.md:
@@ -35,6 +37,7 @@ menu:
   Guidance: guidance.html
   Recording Agent Work: provenance.html
   Artifacts: artifacts.html
+  Contributing: contributing.html
   Development: development.html
   Change Log: changes.html
 

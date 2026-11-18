@@ -33,6 +33,10 @@ An AI coding agent wrote this guide in a single session on 18 November 2026, inc
 
 The repository also contains the agent set-up that the guidance describes: an `AGENTS.md` instruction file, a project skill in `.claude/skills/ig-qa-loop`, and a `_build.sh` script that the agent and a human run in the same way.
 
+### Contributing
+
+Propose a catalogue entry or a feature with a GitHub issue. An agent turns accepted issues into pull requests, as the [contributing](contributing.html) page describes.
+
 ### Artifacts
 
 The profiles, extension, terminology and examples are listed on the [artifacts](artifacts.html) page.
