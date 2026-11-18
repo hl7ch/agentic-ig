@@ -8,4 +8,4 @@
 - Comments and reviews on an agent pull request start a follow-up run.
 - Every new issue starts the agent until 25 November 2026; afterwards a maintainer approves an issue with the label `agent`.
 - Added the development page with model, token usage and prompts.
-- Added the rules of [HL7 AI Transparency on FHIR](https://build.fhir.org/ig/HL7/aitransparency-ig/) to the provenance model (issue 1): `AIAST` label on all artifacts and examples, `reason` `AIAST` required in Agent Authoring Provenance, an input prompt entity, and no Organization as verifier. The profiles follow these rules but do not yet derive from the HL7 profiles, so a validator does not check conformance with them.
+- Added the rules of [HL7 AI Transparency on FHIR](https://build.fhir.org/ig/HL7/aitransparency-ig/) to the provenance model: `AIAST` label on all artifacts and examples, `reason` `AIAST` required in Agent Authoring Provenance, an input prompt entity, and no Organization as verifier. The profiles follow these rules but do not yet derive from the HL7 profiles, so a validator does not check conformance with them ([#1](https://github.com/hl7ch/agentic-ig/issues/1)).
