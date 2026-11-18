@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        When you submit this issue, an AI agent checks the source and opens a pull request, which a human reviews before it is merged.
+        An AI agent checks the source and opens a pull request, which a human reviews before it is merged. Until 25 November 2026 the agent starts when you submit the issue; afterwards a maintainer approves the issue first.
   - type: input
     id: name
     attributes:

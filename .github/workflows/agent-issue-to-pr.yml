@@ -1,24 +1,57 @@
 name: Agent - issue to pull request
 
-# Every new issue starts the agent. The agent implements the issue in the
-# working copy, this workflow opens the pull request and adds the model and
-# token report. Adding the label "agent" to an issue starts a new run, for
-# example after further comments.
+# The agent implements an issue in the working copy, this workflow opens the
+# pull request and adds the model and token report.
 #
-# Anyone with a GitHub account can open an issue, so anyone can start a run
-# on the configured Claude account. To require a maintainer again, remove
-# "opened" below and the allowed_non_write_users input.
+# Until OPEN_INTAKE_UNTIL (inclusive, UTC) every new issue starts the agent,
+# whoever opened it. After that date a maintainer approves an issue by adding
+# the label "agent", and the run is rejected unless that person has write
+# access. The label also starts a further run at any time, for example after
+# new comments. To change the trial period, change the date below.
 on:
   issues:
     types: [opened, labeled]
+
+env:
+  OPEN_INTAKE_UNTIL: "2026-11-25"
 
 concurrency:
   group: agent-issue-${{ github.event.issue.number }}
   cancel-in-progress: false
 
 jobs:
-  implement:
+  gate:
     if: github.event.action == 'opened' || github.event.label.name == 'agent'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    outputs:
+      run: ${{ steps.gate.outputs.run }}
+      open: ${{ steps.gate.outputs.open }}
+    steps:
+      - id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACTION: ${{ github.event.action }}
+          LABEL: ${{ github.event.label.name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          open=false
+          if [ ! "$(date -u +%F)" \> "$OPEN_INTAKE_UNTIL" ]; then open=true; fi
+          run=false
+          if [ "$LABEL" = "agent" ] && [ "$ACTION" = "labeled" ]; then run=true; fi
+          if [ "$ACTION" = "opened" ] && [ "$open" = "true" ]; then run=true; fi
+          echo "open=$open" >> "$GITHUB_OUTPUT"
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+          echo "open intake: $open, start run: $run"
+          if [ "$run" = "false" ]; then
+            gh issue comment "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" \
+              --body "Thank you. A maintainer will read this issue. When the maintainer approves it with the label \`agent\`, an AI agent implements it and opens a pull request."
+          fi
+
+  implement:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
@@ -64,9 +97,10 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # Both inputs are needed to accept issues from people without write access.
+          # During open intake, accept issues from people without write access.
+          # Afterwards the action requires write access from whoever added the label.
           github_token: ${{ github.token }}
-          allowed_non_write_users: "*"
+          allowed_non_write_users: ${{ needs.gate.outputs.open == 'true' && '*' || '' }}
           prompt: |
             Follow the issue-to-pr skill in .claude/skills/issue-to-pr/SKILL.md to implement
             GitHub issue #${{ github.event.issue.number }} of ${{ github.repository }}.

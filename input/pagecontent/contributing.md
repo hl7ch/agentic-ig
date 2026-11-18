@@ -3,14 +3,15 @@ Anyone can propose an addition to this guide with a GitHub issue. An AI agent tu
 ### How to contribute
 
 1. Open an issue in the [repository](https://github.com/hl7ch/agentic-ig/issues/new/choose). Use "Add or correct a catalogue entry" for a skill, plugin, MCP server or tool, and "Feature request" for anything else.
-2. The agent starts at once, implements the issue, and a pull request appears, linked to the issue. If the agent finds the issue unclear or out of scope, it makes no change and says why in a comment.
-3. A maintainer reviews the pull request and merges it or asks for changes.
+2. Until 25 November 2026, the agent starts at once. From 26 November 2026, a maintainer reads the issue first and approves it with the label `agent`.
+3. The agent implements the issue, and a pull request appears, linked to the issue. If the agent finds the issue unclear or out of scope, it makes no change and says why in a comment.
+4. A maintainer reviews the pull request and merges it or asks for changes.
 
 ### What happens in a run
 
 | Step | Done by | Detail |
 |---|---|---|
-| Start | Contributor | Opens an issue. Every new issue starts a run. A maintainer can start a further run by adding the label `agent`. |
+| Start | Contributor or maintainer | Until 25 November 2026 every new issue starts a run. Afterwards a maintainer starts the run by adding the label `agent`, and the run is rejected unless that person has write access. The label also starts a further run at any time. |
 | Prepare | Workflow | Checks out the repository, installs SUSHI, Jekyll and the IG Publisher on the runner, and writes the issue with all its comments to a file for the agent. |
 | Implement | Agent | Follows the `issue-to-pr` skill: classifies the issue, checks sources, edits the files, builds, and writes a summary. |
 | Report | Workflow | Reads the model and the token counts from the agent's run log. |
@@ -24,7 +25,7 @@ Anyone can propose an addition to this guide with a GitHub issue. An AI agent tu
 | File | Purpose |
 |---|---|
 | `.github/ISSUE_TEMPLATE/` | Issue forms that collect what the agent needs |
-| `.github/workflows/agent-issue-to-pr.yml` | Runs the agent on every new issue and opens the pull request |
+| `.github/workflows/agent-issue-to-pr.yml` | Decides whether a run starts, runs the agent and opens the pull request |
 | `.github/scripts/install-toolchain.sh` | Installs the build tools on the runner |
 | `.github/scripts/agent-usage.py` | Turns the agent's run log into the usage report |
 | `.claude/skills/issue-to-pr/SKILL.md` | Tells the agent how to implement an issue |
@@ -59,7 +60,7 @@ The model is the Claude Code default. Set the repository variable `AGENT_MODEL` 
 
 Issue text and fetched web pages are untrusted input. The safeguards reduce what a manipulated agent can do; they do not remove the need to read the diff.
 
-This project starts the agent on every new issue, without a maintainer reading it first. That is the shortest path for contributors, and it has a cost: anyone with a GitHub account can start runs on the project's Claude account, and the first reader of an issue is the agent. A project that cannot accept this should start runs from a label that only maintainers can add; the workflow file says which two lines to change.
+This project ran a one-week trial, until 25 November 2026, in which every new issue started the agent without a maintainer reading it first. That is the shortest path for contributors, and it has a cost: anyone with a GitHub account can start runs on the project's Claude account, and the first reader of an issue is the agent. After the trial a maintainer approves each issue with the label `agent`. The end date is a single value, `OPEN_INTAKE_UNTIL`, in the workflow file, and the workflow switches by itself.
 
 ### Limits
 
