@@ -8,4 +8,4 @@
 - Comments and reviews on an agent pull request start a follow-up run.
 - Every new issue starts the agent until 25 November 2026; afterwards a maintainer approves an issue with the label `agent`.
 - Added the development page with model, token usage and prompts.
-- Compared the provenance model with HL7 AI Transparency on FHIR on the provenance page (issue 1); no artifact changed.
+- Compared the provenance model with HL7 AI Transparency on FHIR and proposed alignment steps on the provenance page (issue 1); no artifact changed.
