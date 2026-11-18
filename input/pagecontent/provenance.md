@@ -35,4 +35,20 @@ Reviewed-by: <human reviewer>
 
 ### Relation to other work
 
-The base FHIR Provenance resource already allows a Device as an agent, and this profile only narrows that pattern. HL7 projects on AI transparency address AI-generated content in clinical data. This guide applies the same idea to the authoring of specifications and makes no claim to align with those projects.
+The base FHIR Provenance resource already allows a Device as an agent, and this profile only narrows that pattern. HL7 publishes [AI Transparency on FHIR](https://build.fhir.org/ig/HL7/aitransparency-ig/branches/main/en/index.html) (STU 1), which records when AI created, updated or manipulated health data in FHIR. This guide applies the same idea to the authoring of specifications. It makes no claim to conform to the HL7 guide.
+
+#### Comparison with AI Transparency on FHIR
+
+The comparison is based on the HL7 overview page and its [AI Device profile](https://build.fhir.org/ig/HL7/aitransparency-ig/branches/main/en/StructureDefinition-AI-Device.html) as read on 18 November 2026. The HL7 guide is a draft build and may change.
+
+| Concept | HL7 AI Transparency | This guide |
+|---|---|---|
+| Identify the AI system | Profile AIDevice on Device; `Device.type` fixed to the code `Artificial-Intelligence` | [AI Agent Device](StructureDefinition-ai-agent-device.html) on Device; `Device.type` bound to the [AI Agent Type](ValueSet-ai-agent-type.html) value set |
+| Kind of AI technology | Extension `aiKind`, preferred binding | Not modelled; the kind of agent is `Device.type` |
+| Model documentation | Extension `modelCardDescription`, a reference to a model card | Not modelled |
+| Name and version | `deviceName` and `version`, both must-support | `deviceName` and `version`, both required and must-support |
+| Who is accountable | AI assertions are declarations of the producing system | A verifier is required in [Agent Authoring Provenance](StructureDefinition-agent-authoring-provenance.html) |
+| Subject | Health data in FHIR | Implementation guide content |
+{: .grid}
+
+The two guides differ in what they describe. Aligning them would need decisions on the `Device.type` code, on a model card reference and on whether this guide depends on the HL7 guide. These are open and are listed in the pull request.
