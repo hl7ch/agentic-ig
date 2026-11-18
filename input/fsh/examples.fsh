@@ -7,7 +7,8 @@ Description: "The coding agent that drafted this implementation guide."
 * manufacturer = "Anthropic"
 * deviceName.name = "Claude Code"
 * deviceName.type = #user-friendly-name
-* type = AIAgentTypeCS#coding-agent
+* type.coding[0] = http://hl7.org/fhir/uv/aitransparency/CodeSystem/AIdeviceTypeCS#Artificial-Intelligence
+* type.coding[+] = AIAgentTypeCS#coding-agent
 * version.value = "claude-fable-5-2"
 
 Instance: ExampleReviewer

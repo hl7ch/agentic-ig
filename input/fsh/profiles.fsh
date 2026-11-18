@@ -3,10 +3,10 @@ Alias: $data-operation = http://terminology.hl7.org/CodeSystem/v3-DataOperation
 Alias: $obs-value = http://terminology.hl7.org/CodeSystem/v3-ObservationValue
 
 Profile: AIAgentDevice
-Parent: Device
+Parent: http://hl7.org/fhir/uv/aitransparency/StructureDefinition/AI-Device
 Id: ai-agent-device
 Title: "AI Agent Device"
-Description: "An AI agent that authors or maintains implementation guide content, identified well enough that its contributions can be traced to a product and a model version."
+Description: "An AI agent that authors or maintains implementation guide content, identified well enough that its contributions can be traced to a product and a model version. It is an AI Device of HL7 AI Transparency on FHIR: `type` holds the HL7 code `Artificial-Intelligence` and a code for the kind of agent."
 * ^experimental = true
 * ^meta.security = $obs-value#AIAST
 * manufacturer 1..1 MS
@@ -15,7 +15,7 @@ Description: "An AI agent that authors or maintains implementation guide content
 * deviceName ^short = "Product name of the agent"
 * type 1..1 MS
 * type from AIAgentTypeVS (required)
-* type ^short = "Kind of agent"
+* type ^short = "Kind of agent, together with the HL7 code Artificial-Intelligence"
 * version 1..* MS
 * version ^short = "Model or product version that produced the content"
 
