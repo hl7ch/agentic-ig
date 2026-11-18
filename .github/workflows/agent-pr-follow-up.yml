@@ -87,6 +87,60 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      # A pull request must be mergeable. Merge the main branch into the working
+      # copy before the agent starts; the agent resolves conflicts in content
+      # files, and the push step commits the merge. This step is inline because
+      # an older branch does not have the current scripts until it is merged.
+      - name: Merge the main branch into the working copy
+        id: merge
+        env:
+          BASE: origin/${{ github.event.repository.default_branch }}
+        run: |
+          set -uo pipefail
+          protected='^(\.github/|\.claude/|AGENTS\.md$|CLAUDE\.md$|_build\.sh$|ig\.ini$)'
+          merge=uptodate
+          : > "$RUNNER_TEMP/conflicts.txt"
+          if ! git merge-base --is-ancestor "$BASE" HEAD; then
+            if git merge --no-commit --no-ff "$BASE" > /dev/null 2>&1; then
+              merge=clean
+            else
+              git diff --name-only --diff-filter=U > "$RUNNER_TEMP/conflicts.txt"
+              if grep -qE "$protected" "$RUNNER_TEMP/conflicts.txt"; then
+                git merge --abort
+                merge=blocked
+              else
+                merge=conflict
+              fi
+            fi
+          fi
+          echo "merge=$merge" >> "$GITHUB_OUTPUT"
+          echo "merge of $BASE: $merge"; cat "$RUNNER_TEMP/conflicts.txt"
+
+          {
+            echo "# State of the branch"
+            echo
+            case "$merge" in
+              uptodate) echo "The branch already contains the current main branch. There is nothing to merge." ;;
+              clean) echo "The workflow merged the current main branch into the working copy, without conflicts. The merge is not committed yet, so \`git status\` shows files that the merge changed. They are not your changes; leave them as they are." ;;
+              conflict)
+                echo "The workflow merged the current main branch into the working copy. These files have conflicts and contain conflict markers. Resolve them before anything else:"
+                echo
+                sed 's/^/- /' "$RUNNER_TEMP/conflicts.txt" ;;
+              blocked)
+                echo "The main branch could not be merged, because these files conflict and some of them are files you may not change:"
+                echo
+                sed 's/^/- /' "$RUNNER_TEMP/conflicts.txt"
+                echo
+                echo "Do not try to resolve this. Do the rest of the work and say in the summary that a maintainer must merge the main branch by hand." ;;
+            esac
+            echo
+          } > "$RUNNER_TEMP/merge.md"
+
+          # Snapshot of the files the agent may not change, taken after the merge.
+          paths=""
+          for p in .github .claude AGENTS.md CLAUDE.md _build.sh ig.ini; do [ -e "$p" ] && paths="$paths $p"; done
+          tar -cf "$RUNNER_TEMP/protected.tar" $paths
+
       # Comments from this workflow are posted with the workflow token. GitHub
       # starts no workflow for events from that token, and the gate also ignores
       # bot accounts, so these comments cannot start another agent run.
@@ -115,7 +169,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ./.github/scripts/agent-pr-context.sh "$ISSUE_NUMBER" "$PR_NUMBER" > "$ISSUE_FILE"
+          cat "$RUNNER_TEMP/merge.md" > "$ISSUE_FILE"
+          ./.github/scripts/agent-pr-context.sh "$ISSUE_NUMBER" "$PR_NUMBER" >> "$ISSUE_FILE"
           wc -c "$ISSUE_FILE"
 
       - name: Run the agent
@@ -151,6 +206,7 @@ jobs:
         id: push
         env:
           GH_TOKEN: ${{ github.token }}
+          MERGE: ${{ steps.merge.outputs.merge }}
         run: |
           set -euo pipefail
           if [ -f "$SUMMARY_FILE" ]; then
@@ -161,9 +217,21 @@ jobs:
           touch "$RUNNER_TEMP/usage.md"
           rm -f "$ISSUE_FILE"
 
-          # The agent may not change its own rules or the build set-up.
-          git checkout HEAD -- .github .claude AGENTS.md CLAUDE.md _build.sh ig.ini
-          git clean -fdq .github .claude
+          # The agent may not change its own rules or the build set-up. Put the
+          # snapshot from before the agent run back.
+          rm -rf .github .claude
+          tar -xf "$RUNNER_TEMP/protected.tar"
+
+          # Do not push a merge that still has conflict markers.
+          if [ "$MERGE" = "conflict" ]; then
+            while IFS= read -r file; do
+              if [ -f "$file" ] && grep -qE '^(<<<<<<<|>>>>>>>)( |$)' "$file"; then
+                echo "conflict markers left in $file"
+                echo "changed=unresolved" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+            done < "$RUNNER_TEMP/conflicts.txt"
+          fi
 
           qa="not available"
           if [ -f output/qa.json ]; then
@@ -171,14 +239,16 @@ jobs:
           fi
           echo "qa=$qa" >> "$GITHUB_OUTPUT"
 
-          if [ -z "$(git status --porcelain)" ]; then
+          if [ -z "$(git status --porcelain)" ] && ! git rev-parse -q --verify MERGE_HEAD > /dev/null; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git config user.name "claude[bot]"
           git config user.email "41898282+claude[bot]@users.noreply.github.com"
           git add -A
-          git commit -q -m "Follow up on comments in pull request #${PR_NUMBER}" -m "Written by an AI agent in ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          subject="Follow up on comments in pull request #${PR_NUMBER}"
+          if git rev-parse -q --verify MERGE_HEAD > /dev/null; then subject="Merge the main branch and follow up on comments in pull request #${PR_NUMBER}"; fi
+          git commit -q -m "$subject" -m "Written by an AI agent in ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${BRANCH}"
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
@@ -190,6 +260,7 @@ jobs:
           CHANGED: ${{ steps.push.outputs.changed }}
           SHA: ${{ steps.push.outputs.sha }}
           QA: ${{ steps.push.outputs.qa }}
+          MERGE: ${{ steps.merge.outputs.merge }}
           AUTHOR: ""
           SENDER: ${{ github.event.sender.login }}
         run: |
@@ -208,8 +279,17 @@ jobs:
               echo "- QA report: https://build.fhir.org/ig/${GITHUB_REPOSITORY}/branches/${BRANCH}/qa.html"
             elif [ "${CHANGED:-}" = "false" ]; then
               echo "${mention:+${mention# } }The agent has finished. It read the comments and made no change."
+            elif [ "${CHANGED:-}" = "unresolved" ]; then
+              echo "${mention:+${mention# } }The agent has finished, but nothing was pushed: the main branch conflicts with this branch and the agent left conflict markers in a file. A maintainer must merge the main branch by hand."
             else
               echo "${mention:+${mention# } }The follow-up run did not complete. See the run log."
+            fi
+            echo
+            if [ "${CHANGED:-}" = "true" ]; then
+              case "${MERGE:-}" in
+                clean|conflict) echo; echo "The pushed commit merges the current main branch, so this pull request has no conflicts with it." ;;
+                blocked) echo; echo "The main branch could not be merged automatically, because it conflicts in files the agent may not change. A maintainer must merge it by hand." ;;
+              esac
             fi
             echo
             cat "$RUNNER_TEMP/summary.md" 2>/dev/null || true

@@ -20,7 +20,7 @@ Anyone can propose an addition to this guide with a GitHub issue. An AI agent tu
 | Open pull request | Workflow | Commits the changes to the branch `agent-issue-<number>` and opens the pull request with the agent's summary, the QA counts and the usage report. |
 | Check | HL7 ci-build | Builds the branch on build.fhir.org after the push. The pull request links to the rendered guide and the QA report of the branch. |
 | Review | Maintainer | Reads the diff and the rendered pages, then merges or comments. |
-| Follow-up | Agent and workflow | Every comment and every review on the pull request starts a further run. The agent reads all comments, the workflow pushes one more commit to the branch and posts the agent's response, with the usage report, on the pull request. |
+| Follow-up | Agent and workflow | Every comment and every review on the pull request starts a further run. The workflow first merges the main branch into the branch, and the agent resolves any conflict. The agent then reads all comments, the workflow pushes one more commit to the branch and posts the agent's response, with the usage report, on the pull request. |
 {: .grid}
 
 ### Files that make up the set-up
@@ -72,6 +72,7 @@ The model is Claude Opus 5.5 (`claude-opus-5-5`). Set the repository variable `A
 - **The agent has a narrow tool set.** It can read and edit files, search and fetch web pages, and run the two build commands. It has no general shell, so it cannot read the token from the environment or push.
 - **The agent cannot change its own rules.** The skill forbids changes to workflows, skills, build scripts and instruction files, and the workflow discards any such change before it commits.
 - **The build is checked twice.** The agent builds during its run, and the HL7 ci-build builds the branch again. The ci-build does not set a status on the pull request, so the reviewer opens the linked QA report.
+- **Pull requests stay mergeable.** A new pull request starts from the current main branch. When the main branch moves on, the next follow-up run merges it into the pull request branch, and the agent resolves conflicts in the content. A conflict in a file the agent may not change is left for a maintainer, and the run says so.
 - **Nothing merges without a human.** The agent opens pull requests and never merges them.
 
 Issue text and fetched web pages are untrusted input. The safeguards reduce what a manipulated agent can do; they do not remove the need to read the diff.
@@ -90,6 +91,7 @@ Every issue that a pull request covers gets its own line in the [change log](cha
 - Labelling the same issue again starts a new run that replaces the branch and updates the pull request.
 - Every comment on a pull request starts a follow-up run, also a comment that asks for nothing. Such a run ends with a short reply and still uses tokens. Runs for the same pull request queue up, and each one reads all comments.
 - A review that approves the pull request does not start a run.
+- A pull request is brought up to date with the main branch only when a follow-up run starts. If the main branch has moved on since the last run and the pull request shows a conflict, any comment on it starts a run that merges and resolves.
 - Follow-up runs work on every open pull request from a branch of this repository, also one a person opened, and the agent pushes its commit to that branch. Pull requests from forks are ignored.
 - Until 25 November 2026 anyone's comment starts a follow-up run. Afterwards the run is rejected unless the commenter has write access.
 - A new run from the issue label replaces the branch, including follow-up commits and commits you pushed yourself.
