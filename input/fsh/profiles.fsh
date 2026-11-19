@@ -71,3 +71,33 @@ Invariant: agent-verifier-human
 Description: "Every agent with the type verifier is a Practitioner or a PractitionerRole."
 Severity: #error
 Expression: "agent.where(type.coding.where(system = 'http://terminology.hl7.org/CodeSystem/provenance-participant-type' and code = 'verifier').exists()).all(who.resolve() is Practitioner or who.resolve() is PractitionerRole)"
+
+Profile: DemoMedicinalProduct
+Parent: MedicinalProduct
+Id: demo-medicinal-product
+Title: "Demo Medicinal Product"
+Description: "A demonstration profile on MedicinalProduct that shows two common profiling techniques: slicing `identifier` by the identifier system, with slices for the GS1 GTIN, the US National Drug Code and the Swiss IDMP MPID, and binding `domain` to a value set with the codes human and veterinary. It is not meant for use in production."
+* ^experimental = true
+* ^meta.security = $obs-value#AIAST
+* identifier ^slicing.discriminator.type = #value
+* identifier ^slicing.discriminator.path = "system"
+* identifier ^slicing.rules = #open
+* identifier ^slicing.description = "Slice by the identifier system"
+* identifier contains
+    gtin 0..* and
+    ndc 0..* and
+    chMpid 0..*
+* identifier[gtin] ^short = "GS1 Global Trade Item Number (GTIN)"
+* identifier[gtin].system 1..1
+* identifier[gtin].system = "https://www.gs1.org/gtin" (exactly)
+* identifier[gtin].value 1..1
+* identifier[ndc] ^short = "US National Drug Code (NDC)"
+* identifier[ndc].system 1..1
+* identifier[ndc].system = "http://hl7.org/fhir/sid/ndc" (exactly)
+* identifier[ndc].value 1..1
+* identifier[chMpid] ^short = "Swiss medicinal product identifier (MPID) as used by CH IDMP"
+* identifier[chMpid].system 1..1
+* identifier[chMpid].system = "http://fhir.ch/ig/ch-idmp/sid/mpid" (exactly)
+* identifier[chMpid].value 1..1
+* domain from MedicinalProductDomainVS (example)
+* domain ^short = "Human or veterinary use"

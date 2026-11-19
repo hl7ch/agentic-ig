@@ -41,3 +41,21 @@ Description: "All kinds of capability an AI agent can be given when it works on 
 * ^experimental = true
 * ^meta.security = $obs-value#AIAST
 * include codes from system AgentToolTypeCS
+
+CodeSystem: MedicinalProductDomainCS
+Id: medicinal-product-domain
+Title: "Medicinal Product Domain"
+Description: "Example codes for whether a medicinal product is for human or for veterinary use. They serve the Demo Medicinal Product profile and are not meant for use in production."
+* ^caseSensitive = true
+* ^experimental = true
+* ^meta.security = $obs-value#AIAST
+* #human "Human use" "The medicinal product is for use in humans."
+* #veterinary "Veterinary use" "The medicinal product is for use in animals."
+
+ValueSet: MedicinalProductDomainVS
+Id: medicinal-product-domain
+Title: "Medicinal Product Domain"
+Description: "Example value set with the codes for human and for veterinary use of a medicinal product."
+* ^experimental = true
+* ^meta.security = $obs-value#AIAST
+* include codes from system MedicinalProductDomainCS
