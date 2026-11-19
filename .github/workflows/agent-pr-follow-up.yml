@@ -105,6 +105,10 @@ jobs:
           : > "$RUNNER_TEMP/conflicts.txt"
           git config user.name "claude[bot]"
           git config user.email "41898282+claude[bot]@users.noreply.github.com"
+          # Keep both sides' lines in the change log. Set here as well as in
+          # .gitattributes, because an older branch does not have that file yet.
+          mkdir -p "$(git rev-parse --git-path info)"
+          echo "input/pagecontent/changes.md merge=union" >> "$(git rev-parse --git-path info/attributes)"
           if ! git merge-base --is-ancestor "$BASE" HEAD; then
             if git merge --no-ff -m "Merge the main branch into ${BRANCH}" "$BASE" > /dev/null 2>&1; then
               merge=clean

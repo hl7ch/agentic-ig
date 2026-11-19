@@ -1,0 +1,2 @@
+# Keep the lines of both sides when two branches add to the change log.
+input/pagecontent/changes.md merge=union
