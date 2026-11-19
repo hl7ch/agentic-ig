@@ -60,3 +60,14 @@ Description: "The prompts that the coding agent worked from, published on the de
 * content.attachment.contentType = #text/html
 * content.attachment.url = "https://build.fhir.org/ig/hl7ch/agentic-ig/development.html"
 * content.attachment.title = "How This Guide Was Developed"
+
+Instance: ExampleMedicinalProduct
+InstanceOf: DemoMedicinalProduct
+Usage: #example
+Title: "Example medicinal product"
+Description: "A fictional medicinal product for human use, identified by a GTIN and a Swiss MPID. The identifier values are invented."
+* meta.security = $obs-value#AIAST
+* identifier[gtin].value = "7612345000008"
+* identifier[chMpid].value = "CH-EXAMPLE-0001"
+* domain = MedicinalProductDomainCS#human "Human use"
+* name.productName = "Examplofen 400 mg film-coated tablets"
