@@ -136,6 +136,27 @@ These servers read and write data on a FHIR server. They are outside IG authorin
 
 A maintained directory of further servers is [awesome-healthcare-mcp-servers](https://github.com/rdmgator12/awesome-healthcare-mcp-servers).
 
+### Estimated popularity of the MCP servers
+
+No source counts how many people use an MCP server. This table gives the public signals that come closest: the stars and forks of the GitHub repository, read from the GitHub API on 19 November 2026, and for the package published only on PyPI its downloads in the last 30 days from [pypistats.org](https://pypistats.org/packages/mcp-terminology). Stars measure interest in a repository, not use, and they belong to the whole repository: where a server shares its repository with other projects, the count says little about the server itself. Treat the figures as a rough order of magnitude and check them again before you rely on them.
+
+| Name | Repository or package | Stars | Forks | Note |
+|---|---|---|---|---|
+| Matchbox validation MCP | [ahdis/matchbox](https://github.com/ahdis/matchbox) | 38 | 30 | Counts the whole Matchbox server, of which the MCP endpoint is one part. |
+| `cql-mcp` | [cqframework/cqf-skills](https://github.com/cqframework/cqf-skills) | 0 | 1 | Counts all cqf-skills plugins. The repository was created on 13 November 2026. |
+| FHIR MCP server in the `healthcare` plugin | [anthropics/healthcare](https://github.com/anthropics/healthcare) | 454 | 120 | Counts the whole plugin repository. |
+| SNOMED CT Terminology connector (Snowstorm) | No source repository identified | – | – | No public signal. |
+| `mcp-snomed-ct` | [eigenbau/mcp-snomed-ct](https://github.com/eigenbau/mcp-snomed-ct) | 21 | 3 | |
+| `mcp-terminology` | [PyPI](https://pypi.org/project/mcp-terminology/) | – | – | 96 downloads in the last 30 days; downloads include mirrors and automated installs. |
+| MCP-LOINC | [Kryzo/mcp-Loinc](https://github.com/Kryzo/mcp-Loinc) | 13 | 8 | Last push March 2025. |
+| RxNorm MCP | [pipeworx-io/mcp-rxnorm](https://github.com/pipeworx-io/mcp-rxnorm) | 0 | 0 | |
+| WSO2 FHIR MCP server | [wso2/fhir-mcp-server](https://github.com/wso2/fhir-mcp-server) | 139 | 59 | |
+| AWS HealthLake MCP server | [awslabs/mcp](https://github.com/awslabs/mcp) | 9934 | 1886 | Counts the whole AWS MCP collection, not the HealthLake server alone. |
+| Medplum MCP server | [medplum/medplum-mcp-server](https://github.com/medplum/medplum-mcp-server) | 5 | 5 | The repository is archived. |
+| Health Record MCP | [jmandel/health-record-mcp](https://github.com/jmandel/health-record-mcp) | 88 | 36 | The repository is archived. |
+| AEHRC FHIR tools | [aehrc/mcp-fhir-tools](https://github.com/aehrc/mcp-fhir-tools) | 21 | 6 | |
+{: .grid}
+
 ### Agents in continuous integration
 
 | Name | Source | What it covers | Check |
