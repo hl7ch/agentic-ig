@@ -119,7 +119,10 @@ A Matchbox server only validates against the IGs it has loaded. To validate agai
 | `mcp-terminology` | [PyPI](https://pypi.org/project/mcp-terminology/) | LOINC, SNOMED CT, RxNorm and ICD-10 lookup through the public `tx.fhir.org` server. | Listed only |
 | MCP-LOINC | [Kryzo/mcp-Loinc](https://github.com/Kryzo/mcp-Loinc) | Wrapper for the LOINC API. | Listed only |
 | RxNorm MCP | [pipeworx-io/mcp-rxnorm](https://github.com/pipeworx-io/mcp-rxnorm) | Drug concept lookup through the NLM RxNav API. | Listed only |
+| `medical-terminologies-mcp` | [SidneyBissoli/medical-terminologies-mcp](https://github.com/SidneyBissoli/medical-terminologies-mcp), announced by its author on [chat.fhir.org](https://chat.fhir.org/#narrow/channel/179160-social/topic/Open-source.20MCP.20server.20for.20ICD-11.2C.20LOINC.2C.20RxNorm.2C.20MeSH/near/642324003) | Read-only lookup in ICD-11, LOINC, RxNorm, MeSH, ATC and the Brazilian ICD-10 (CID-10), and ICD-10 to ICD-11 mapping with the WHO transition tables, in 33 tools. Every answer carries provenance: source, canonical URL, data version, retrieval time, citation and licence. It is not a FHIR terminology server, and it dropped SNOMED CT in version 2.0.0. Server code under MIT; the terminology content keeps its own terms, ICD-11 for example CC BY-ND 3.0 IGO. | Source read |
 {: .grid}
+
+`medical-terminologies-mcp` runs locally with `npx -y medical-terminologies-mcp` as the MCP command, or is installed with `npm install -g medical-terminologies-mcp`. The ICD-11 tools then need WHO ICD API credentials in `WHO_CLIENT_ID` and `WHO_CLIENT_SECRET`; the other terminologies need none. The author also runs a hosted endpoint at `https://medical.sidneybissoli.com/mcp` with Streamable HTTP that needs no credentials. The commands are quoted from the README and were not run for this catalogue.
 
 ### MCP servers for FHIR data access
 
@@ -150,6 +153,7 @@ No source counts how many people use an MCP server. This table gives the public 
 | `mcp-terminology` | [PyPI](https://pypi.org/project/mcp-terminology/) | – | – | 96 downloads in the last 30 days; downloads include mirrors and automated installs. |
 | MCP-LOINC | [Kryzo/mcp-Loinc](https://github.com/Kryzo/mcp-Loinc) | 13 | 8 | Last push March 2025. |
 | RxNorm MCP | [pipeworx-io/mcp-rxnorm](https://github.com/pipeworx-io/mcp-rxnorm) | 0 | 0 | |
+| `medical-terminologies-mcp` | [SidneyBissoli/medical-terminologies-mcp](https://github.com/SidneyBissoli/medical-terminologies-mcp) | 16 | 6 | Read from the repository page on 20 November 2026, not from the GitHub API. |
 | WSO2 FHIR MCP server | [wso2/fhir-mcp-server](https://github.com/wso2/fhir-mcp-server) | 139 | 59 | |
 | AWS HealthLake MCP server | [awslabs/mcp](https://github.com/awslabs/mcp) | 9934 | 1886 | Counts the whole AWS MCP collection, not the HealthLake server alone. |
 | Medplum MCP server | [medplum/medplum-mcp-server](https://github.com/medplum/medplum-mcp-server) | 5 | 5 | The repository is archived. |
